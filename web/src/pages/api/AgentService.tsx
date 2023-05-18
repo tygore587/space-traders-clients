@@ -14,18 +14,22 @@ export async function GetAgentAsync()
         return data;
     }
 
-    const axios = require('axios').default;
-
-    const options = {
-        method: 'GET',
-        url: 'https://api.spacetraders.io/v2/my/agent',
-        headers: {Accept: 'application/json', Authorization: 'Bearer ' + token}
-    };
+    const url = 'https://api.spacetraders.io/v2/my/agent';
+	const options = {
+		method: 'GET',
+		headers: {
+		    Accept: 'application/json',
+            Authorization: 'Bearer ' + token
+		}
+	};
 
     try {
 
-        let response: any = await axios.request(options);
-        let data: Agent = response.data.data;
+        let response: any = await fetch(url, options);
+
+        let result = await response.json();
+
+        let data: Agent = result.data;
         return data;
 
     } catch (error) {

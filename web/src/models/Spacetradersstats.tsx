@@ -2,6 +2,7 @@ export interface SpaceTradersStats {
     status:       string;
     stats:        Stats;
     leaderboards: Leaderboards;
+    serverResets: ServerReset;
 }
 
 export interface Leaderboards {
@@ -24,4 +25,9 @@ export interface Stats {
     ships:     number;
     systems:   number;
     waypoints: number;
+}
+
+export interface ServerReset {
+    frequency: string;
+    next: Date;
 }

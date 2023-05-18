@@ -1,9 +1,14 @@
 import React from "react";
 import { ShipModel } from "@/models/Ship";
 
-export const Ship = (props: any) =>
+interface IShipData
 {
-    let ship: ShipModel = props.ship;
+    shipData: ShipModel
+}
+
+export const Ship = ({shipData}:IShipData) =>
+{
+    let ship: ShipModel = shipData;
 
     return (
         <div className="
@@ -18,7 +23,7 @@ export const Ship = (props: any) =>
             <p>Nav: <i>-{ship.nav.status}-</i> {ship.nav.route.destination.symbol}</p>
             <p>Fuel: {ship.fuel.current} / {ship.fuel.capacity}</p>
             <p>Cargo: {ship.cargo.units} / {ship.cargo.capacity}</p>
-            <ul className="list-disc list-inside pl-[0.2em] flex flex-col gap-2">
+            <ul className="list-disc list-inside pl-[0.2em] flex flex-col gap-2 marker:text-sky-600">
                 {ship.cargo.inventory.map((cargoItem) => 
                     <li key={cargoItem.symbol}>{cargoItem.name} - {cargoItem.units}</li>
                 )}

@@ -1,18 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import { GetStatsAsync } from '../pages/api/SpaceTradersStatsService'
 import {SpaceTradersStats} from "../models/Spacetradersstats"
 
-
-// component used to archive the asset record locally in our database
 export const GameStats = () => 
 {
     const [stats, setStats] = useState<SpaceTradersStats>();
+    const [resetDate, setResetDate] = useState<string>();
 
     const fetchStats = async () => 
     {
         const response: any = await GetStatsAsync();
 
-        let data: SpaceTradersStats = response.data;
+        let data: SpaceTradersStats = response;
+
+        let dateString: string = data?.serverResets?.next?.toString();
+
+        setResetDate(dateString != "" ? new Date(dateString).toLocaleString("de-DE") : "-");
 
         setStats(data);
     };
@@ -25,6 +28,7 @@ export const GameStats = () =>
     return (
         <>
         <div className="ml-5">
+            <div className="text-sky-600"><b>Next Server Reset - {resetDate}</b></div>
             <div><b>Status:</b> {stats?.status}</div>
             <div><b>active Agents:</b> {stats?.stats.agents}</div>
             <div><b>active Ships:</b> {stats?.stats.ships}</div>

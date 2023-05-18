@@ -3,19 +3,19 @@ import { Waypoint } from "@/models/Waypoint";
 
 export async function GetSystemsAsJSONAsync() 
 {
-    const axios = require('axios').default;
-
-    const options = {
-        method: 'GET',
-        url: 'https://api.spacetraders.io/v2/systems.json',
-        headers: {Accept: 'application/json'}
-    };
+    const url = 'https://api.spacetraders.io/v2/systems.json';
+	const options = {
+		method: 'GET',
+		headers: {
+		    Accept: 'application/json'
+		}
+	};
 
     try {
 
-        let response: any = await axios.request(options);
+        let response: any = await fetch(url, options);
 
-        let data: System[] = response.data;
+        let data: System[] = await response.json();
 
         return data;
 
@@ -26,17 +26,21 @@ export async function GetSystemsAsJSONAsync()
 
 export async function GetSystemAsync(systemSymbol: string)
 {
-    const axios = require('axios').default;
-
-    const options = {
-        method: 'GET',
-        url: 'https://api.spacetraders.io/v2/systems/' + systemSymbol,
-        headers: {Accept: 'application/json'}
-    };
+    const url = 'https://api.spacetraders.io/v2/systems/' + systemSymbol;
+	const options = {
+		method: 'GET',
+		headers: {
+		    Accept: 'application/json'
+		}
+	};
 
     try {
 
-        let response: any = await axios.request(options);
+        let response: any = await fetch(url, options);
+
+        let result = await response.json();
+        console.log(result);
+
         let data: System = response.data.data;
         return data;
 
@@ -45,20 +49,24 @@ export async function GetSystemAsync(systemSymbol: string)
     }
 }
 
-export async function GetWaypointsAsync(systemSymbol: string, pageSize: number = 20)
+export async function GetWaypointsAsync(systemSymbol: string, page: number = 1, limit: number = 20)
 {
-    const axios = require('axios').default;
-
-    const options = {
-        method: 'GET',
-        url: 'https://api.spacetraders.io/v2/systems/' + systemSymbol + '/waypoints?limit=' + pageSize,
-        headers: {Accept: 'application/json'}
-    };
+    const param: string = `?page=${page}&limit=${limit}`
+    const url = 'https://api.spacetraders.io/v2/systems/' + systemSymbol + '/waypoints' + param;
+	const options = {
+		method: 'GET',
+		headers: {
+		    Accept: 'application/json'
+		}
+	};
 
     try {
 
-        let response: any = await axios.request(options);
-        let data: Waypoint[] = response.data.data;
+        let response: any = await fetch(url, options);
+
+        let result = await response.json();
+
+        let data: Waypoint[] = result.data;
         return data;
 
     } catch (error) {

@@ -24,7 +24,7 @@ export const ShipList = () =>
     return (
         <div className="flex bg-slate-700 p-[0.5em] w-max">
             {ships?.map((ship) => (
-                <Ship key={ship.symbol} ship={ship}/>
+                <Ship key={ship.symbol} shipData={ship}/>
             ))}
         </div>
     )

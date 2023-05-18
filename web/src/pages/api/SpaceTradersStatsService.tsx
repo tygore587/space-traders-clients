@@ -2,17 +2,22 @@ import { Stats } from "../../models/Spacetradersstats"
 
 export async function GetStatsAsync()
 {
-    const axios = require('axios').default;
-
-    const options = {
-        method: 'GET',
-        url: 'https://api.spacetraders.io/v2/',
-        headers: {Accept: 'application/json'}
-    };
+    const url = 'https://api.spacetraders.io/v2/';
+	const options = {
+		method: 'GET',
+		headers: {
+		    Accept: 'application/json'
+		}
+	};
 
     try {
 
-        let data: Stats = await axios.request(options);
+        let response: any = await fetch(url, options);
+
+        let result = await response.json();
+
+        let data: Stats = result;
+
         return data;
 
     } catch (error) {
