@@ -23,7 +23,7 @@ export default function Dashboard()
             <div className="flex flex-row justify-start h-full">
                 <SideNav  handleCallback={SetComponentVisabilty}/>
                 <div className="flex flex-row justify-start gap-[1em] h-full w-full"/*"grid grid-cols-3 grid-rows-1 h-auto"*/>
-                    {visability === 0 ? <UniverseMap/> : null}
+                    {visability === 0 && <UniverseMap/>}
                     {visability=== 1 && <SystemMap/>}
                     {visability === 2 && <ShipList/>}
                     {visability === 4 && <FactionList/>}

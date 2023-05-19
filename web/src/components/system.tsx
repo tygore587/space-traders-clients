@@ -62,7 +62,8 @@ export const SystemMap = () =>
         <div id="systemBox" className="bg-slate-900 h-full w-full">
             <div id="input" className="w-fit">
                 <input name="symbol" id="symbol" type="text" placeholder='system Symbol' onChange={e => setSymbol(e.target.value)}></input>
-                <button className='text-zinc-800 bg-white mt-2 ml-[0.2em]' type="submit" value="Go" onClick={fetchSystems}>go to System</button>
+                <button className='text-zinc-800 bg-white mt-2 ml-[0.2em] px-[0.4em] py-[0.1em] border-[0.2em] border-solid rounded-lg border-sky-600 hover:border-sky-500' 
+                    type="submit" value="Go" onClick={fetchSystems}>go to System</button>
             </div>
         
             <p>{systemSymbol}</p>

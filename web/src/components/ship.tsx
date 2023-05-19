@@ -4,9 +4,10 @@ import { ShipModel } from "@/models/Ship";
 interface IShipData
 {
     shipData: ShipModel
+    callback: any
 }
 
-export const Ship = ({shipData}:IShipData) =>
+export const Ship = ({shipData, callback}:IShipData) =>
 {
     let ship: ShipModel = shipData;
 
