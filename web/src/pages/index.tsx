@@ -2,6 +2,7 @@ import '../app/globals.css'
 import { useEffect } from "react";
 import { useRouter } from 'next/router'
 import { GameStats } from '../components/gamestats'
+import { Button } from '@/components/button';
 
 export default function Login() 
 {
@@ -25,7 +26,7 @@ export default function Login()
             <div>
                 <form onSubmit={login}>
                     <input name="token" id="token" type="text" placeholder='token' required></input><br/>
-                    <button className='text-zinc-800 bg-white mt-2 px-[0.4em] py-[0.1em] border-[0.2em] border-solid rounded-lg border-sky-600 hover:border-sky-500' type="submit" value="Login">Login</button>
+                    <Button text="Login" type="Submit" value="Login"/>
                 </form>
             </div>
         </div>

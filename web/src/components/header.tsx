@@ -18,7 +18,7 @@ export const Header = () =>
         fetchAgent();
     }, []);
     return (
-        <div className="flex flex-row justify-between align-center bg-slate-700 h-fit w-fill p-[1em] border-b-[0.1em] border-indigo-900/50">
+        <div className="flex flex-row justify-between align-center bg-slate-700 h-fit w-fill p-[1em]">
             <div><b>User:</b> {agent?.symbol}</div>
             <div><b>Headquarter:</b> {agent?.headquarters}</div>
             <div><b>Credits:</b> {agent?.credits.toLocaleString('de-DE')}</div>

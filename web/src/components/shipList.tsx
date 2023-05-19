@@ -27,17 +27,17 @@ export const ShipList = () =>
 
     function SelectShip(ship: ShipModel)
     {
-        setSelectedShip(ship)
+        setSelectedShip(ship);
     }
 
     return (
-        <div>
-            <div className="flex bg-slate-700 p-[0.5em] w-max">
+        <div className="flex flex-row justify-between mt-[0.5em] mx-[0.5em] w-full">
+            <div className="flex flex-col bg-slate-700 gap-[1em] w-max">
                 {ships?.map((ship) => (
                     <Ship key={ship.symbol} shipData={ship} callback={SelectShip}/>
                 ))}
             </div>
-            {/*selectedShip ?? <ShipDetails shipData={selectedShip}/>*/}
+            {selectedShip && <ShipDetails shipData={selectedShip}/>}
         </div>
     )
 }
