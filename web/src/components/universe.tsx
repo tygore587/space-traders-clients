@@ -2,19 +2,30 @@ import React, { useState, useEffect } from "react";
 import { GetSystemsAsJSONAsync } from '../pages/api/SystemService'
 import {System} from "../models/System"
 
-
 // component 
 export const UniverseMap = () => 
 {
     const [systems, setSystems] = useState<System[]>();
 
-    let systemPointRadius: number = 5;
+    let coordMaxValue: number = 0;
+    let systemPointRadius: number = 50;
+
+    let draggin: boolean = false;
 
     const fetchSystems = async () => 
     {
         const response: any = await GetSystemsAsJSONAsync();
 
         let data: System[] = response;
+
+        if (data != null && data.length > 0)
+        {
+            data?.forEach(wp => {
+                coordMaxValue=Math.max(coordMaxValue, Math.abs(wp.x), Math.abs(wp.y));
+            });
+
+            coordMaxValue = Math.ceil(coordMaxValue * 2.2);
+        }
 
         setSystems(data);
     };
@@ -39,26 +50,9 @@ export const UniverseMap = () =>
         var viewBox = svg.viewBox.baseVal;
 
         svg.addEventListener("wheel", onWheel);
-
-        /*var zoom = {
-            animation: new TimelineLite(),
-            scaleFactor: 1.6,
-            duration: 0.5,
-            ease: Power2.easeOut,
-        };
-
-        TweenLite.set(pivot, { scale: 0 });
-
-        var resetAnimation = new TimelineLite();
-
-        var pannable = new Draggable(proxy, {
-            throwResistance: 3000,
-            trigger: svg,
-            throwProps: true,
-            onPress: selectDraggable,
-            onDrag: updateViewBox,
-            onThrowUpdate: updateViewBox,
-        });*/
+        svg.addEventListener("mousedown", StartDrag);
+        svg.addEventListener("mousemove", Drag);
+        svg.addEventListener("mouseup", EndDrag);
 
     //
     // ON WHEEL
@@ -82,21 +76,13 @@ export const UniverseMap = () =>
             point.y = event.clientY;
             
             var startPoint = point.matrixTransform(svg.getScreenCTM().inverse());
-                
-            var fromVars = {
-            // ease: zoom.ease,
-                x: viewBox.x,
-                y: viewBox.y,
-                width: viewBox.width,
-                height: viewBox.height,
-            };
 
             let width: number = viewBox.width * scaleDelta;
             
-            if (width > 30000)
+            if (width > coordMaxValue)
             {
-                viewBox.width = 30000;
-                viewBox.height = 30000;
+                viewBox.width = coordMaxValue;
+                viewBox.height = coordMaxValue;
 
                 viewBox.x = -0.5 * viewBox.width
                 viewBox.y = -0.5 * viewBox.height
@@ -115,52 +101,41 @@ export const UniverseMap = () =>
 
                 systemPointRadius *= scaleDelta;
             }
-            
-            //zoom.animation = TweenLite.from(viewBox, zoom.duration, fromVars);  
         }
 
         //
         // SELECT DRAGGABLE
         // =========================================================================== 
-        function selectDraggable(event: any) 
+        function StartDrag(event: any) 
         {
-console.log("test");
+            draggin = true;
+            startGlobal = point.matrixTransform(svg.getScreenCTM().inverse());
+            /*startGlobal.x = event.clientX;
+            startGlobal.y = event.clientY;
 
-            /*if (resetAnimation.isActive()) {
-                resetAnimation.kill();
-            }
-                
-            startClient.x = this.pointerX;
-            startClient.y = this.pointerY;
-            startGlobal = startClient.matrixTransform(svg.getScreenCTM().inverse());
-            
-            // mouse button
-            if (event.button === 1) {
-                TweenLite.set(proxy, { 
-                    x: this.pointerX, 
-                    y: this.pointerY
-                });
-
-                pannable.enable().update().startDrag(event);
-            }*/
+            console.log(point.matrixTransform(svg.getScreenCTM().inverse()));
+            console.log(event.clientX + " | " + event.clientY);*/
         }
 
         //
         // UPDATE VIEWBOX
         // =========================================================================== 
-        function updateViewBox() 
+        function Drag(event: any) 
         {
-            /*if (zoom.animation.isActive()) {
-                return;
-            }*/
-            
-            /*point.x = this.x;
-            point.y = this.y;*/
+            if (!draggin) return;
+
+            point.x = event.clientX;
+            point.y = event.clientY;
 
             var moveGlobal = point.matrixTransform(svg.getScreenCTM().inverse());
                 
             viewBox.x -= (moveGlobal.x - startGlobal.x);
             viewBox.y -= (moveGlobal.y - startGlobal.y);
+        }
+
+        function EndDrag(event: any) 
+        {
+            draggin = false;
         }
     }, []);
     //-------------------------------------------------------------------------------
@@ -175,7 +150,7 @@ console.log("test");
             <svg id="universeSvg" viewBox="-500 -500 1000 1000" className="h-full w-full bg-slate-900">
                 {systems?.map((system) => (
                     <g key={system.symbol}>
-                        <text key={system.symbol+"_"+system.x+"_"+system.y+"_name"} x={system.x-(3*system.symbol.length)} y={system.y-6} className="text-xs fill-white select-none">{system.symbol}</text>
+                        <text key={system.symbol+"_"+system.x+"_"+system.y+"_name"} x={system.x-(3*system.symbol.length)} y={system.y-6-systemPointRadius} className="text-[50] fill-white select-none">{system.symbol}</text>
                         <circle id={system.symbol} key={system.symbol+"_"+system.x+"_"+system.y} r={systemPointRadius} cx={system.x} cy={system.y} className="fill-white" onClick={onClick}/>
                     </g>
                 ))}
