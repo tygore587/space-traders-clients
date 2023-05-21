@@ -7,7 +7,7 @@ export const FactionList = () =>
 {
     const [factions, setFactions] = useState<FactionModel[]>();
 
-    const fetchContracts = async () => 
+    const fetchFactions= async () => 
     {
         const response: any = await GetFactionListAsync();
 
@@ -18,11 +18,11 @@ export const FactionList = () =>
 
     useEffect(() => 
     {
-        fetchContracts();
+        fetchFactions();
     }, []);
 
     return (
-        <div className="flex gap-[1em] bg-slate-700 p-[0.5em] w-max">
+        <div className="flex flex-row flex-wrap gap-[1em] bg-slate-700 p-[0.5em] w-full h-max">
             {factions?.map((faction) => (
                 <Faction key={faction.symbol} factionData={faction}/>
             ))}

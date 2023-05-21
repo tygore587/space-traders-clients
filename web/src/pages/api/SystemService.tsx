@@ -1,3 +1,4 @@
+import { Faction } from "@/components/faction";
 import { System } from "@/models/System";
 import { Waypoint } from "@/models/Waypoint";
 
@@ -7,7 +8,7 @@ export async function GetSystemsAsJSONAsync()
 	const options = {
 		method: 'GET',
 		headers: {
-		    Accept: 'application/json'
+		    Accept: 'application/json',
 		}
 	};
 
@@ -39,9 +40,8 @@ export async function GetSystemAsync(systemSymbol: string)
         let response: any = await fetch(url, options);
 
         let result = await response.json();
-        console.log(result);
 
-        let data: System = response.data.data;
+        let data: System = result.data;
         return data;
 
     } catch (error) {
