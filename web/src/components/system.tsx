@@ -38,7 +38,7 @@ export const SystemMap = () =>
         {
             data?.forEach(wp => {
                 waypointDict.set(wp.symbol, wp);
-                coords=Math.max(coords, Math.abs(wp.x), Math.abs(wp.y));
+                coords=Math.max(coords, Math.ceil(Math.sqrt(wp.x*wp.x + wp.y*wp.y)));
                 if (wp.orbitals.length > 0){
                     wp.orbitals.forEach( orbital => orbitList.push(orbital.symbol))
                 }

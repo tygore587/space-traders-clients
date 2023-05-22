@@ -22,6 +22,9 @@ export default function Registration()
         if( response.status)
         {
             localStorage.setItem('token', response.value);
+
+            alert("Save the following Token as it's the Login for your Agent: \r\n\r\n" + response.value);
+
             router.push("/dashboard");
         }
         else
