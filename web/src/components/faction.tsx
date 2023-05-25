@@ -15,11 +15,11 @@ export const Faction = ({factionData}:IFactionData) =>
     return (
         <div className="
             flex flex-col justify-start 
-            bg-slate-600 
+            bg-slate-800 
             pl-[1em] pr-[1em] pt-[0.2em] pb-[0.5em] 
             border-[0.1em] rounded-md border-indigo-500/50 
             hover:border-sky-600 
-            max-h-fit w-fit max-w-md" 
+            max-h-fit w-fit max-w-lg" 
             onClick={() => setShowTraits(!showTraits)}
         >
             <p className="text-orange-500 font-bold break-words">{faction.name} - {faction.symbol}</p>

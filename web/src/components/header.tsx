@@ -2,9 +2,13 @@ import React, { useState, useEffect } from "react";
 import * as AgentApi from "../pages/api/AgentService";
 import { Agent } from "../models/Agent";
 
-export const Header = () => 
+interface IAgent {
+    agent?: Agent
+}
+
+export const Header = ({agent}:IAgent) => 
 {
-    const [agent, setAgent] = useState<Agent>();
+    /*const [agent, setAgent] = useState<Agent>();
 
     const fetchAgent= async () => 
     {
@@ -16,11 +20,11 @@ export const Header = () =>
     useEffect(() => 
     {
         fetchAgent();
-    }, []);
+    }, []);*/
+
     return (
-        <div className="flex flex-row justify-between align-center bg-slate-700 h-fit w-fill p-[1em]">
+        <div className="flex flex-row justify-between items-center bg-slate-900 h-full w-full px-[1em]">
             <div><b>User:</b> {agent?.symbol}</div>
-            <div><b>Headquarter:</b> {agent?.headquarters}</div>
             <div><b>Credits:</b> {agent?.credits.toLocaleString('de-DE')}</div>
         </div>
     )

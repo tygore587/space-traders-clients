@@ -14,7 +14,7 @@ export const Ship = ({shipData, callback}:IShipData) =>
     return (
         <div className="
             flex flex-col justify-start 
-            bg-slate-600 
+            bg-slate-800 
             pl-[1em] pr-[1em] pt-[0.2em] pb-[0.5em] 
             border-[0.15em] rounded-md border-indigo-500/50 
             hover:border-indigo-500 

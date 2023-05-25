@@ -13,17 +13,17 @@ export interface Waypoint {
     chart: Chart
   }
   
-interface WaypointOrbital {
+export interface WaypointOrbital {
     symbol: string
 }
 
-interface WaypointTrait {
+export interface WaypointTrait {
     symbol: WaypointTraitSymbol
     name: string
     description: string
   }
 
-enum WaypointTraitSymbol {
+export enum WaypointTraitSymbol {
     "UNCHARTED",
     "MARKETPLACE",
     "SHIPYARD",

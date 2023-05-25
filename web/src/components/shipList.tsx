@@ -4,12 +4,13 @@ import { ShipModel } from "@/models/Ship";
 import { GetShipListAsync } from "@/pages/api/ShipService";
 import { ShipDetails } from "./shipDetails";
 
-export const ShipList = () =>
-{
-    const [ships, setShips] = useState<ShipModel[]>();
-    const [selectedShip, setSelectedShip] = useState<ShipModel>();
 
-    const fetchShips = async () => 
+export const ShipList = ({shiplist}:any) =>
+{
+    const [ships] = useState<ShipModel[]>(shiplist);
+    const [selectedShip, setSelectedShip] = useState<ShipModel>(shiplist[0]);
+
+    /*const fetchShips = async () => 
     {
         const response: any = await GetShipListAsync();
 
@@ -23,7 +24,7 @@ export const ShipList = () =>
     useEffect(() => 
     {
         fetchShips();
-    }, []);
+    }, []);*/
 
     function SelectShip(ship: ShipModel)
     {
@@ -31,8 +32,8 @@ export const ShipList = () =>
     }
 
     return (
-        <div className="flex flex-row justify-between mt-[0.5em] mx-[0.5em] w-full">
-            <div className="flex flex-col bg-slate-700 gap-[1em] w-max">
+        <div className="flex flex-row grow justify-between pt-[0.5em] px-[0.5em] h-full w-full bg-slate-900">
+            <div className="flex flex-col gap-[1em] w-max overflow-y-auto ">
                 {ships?.map((ship) => (
                     <Ship key={ship.symbol} shipData={ship} callback={SelectShip}/>
                 ))}

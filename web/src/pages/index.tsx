@@ -22,7 +22,7 @@ export default function Login()
   };
 
   return (
-    <>
+    <div>
         <div className="grid justify-center">
             <h1>{msg === "" ? "Home" : msg}</h1>
             <h2>Log in</h2>
@@ -35,6 +35,6 @@ export default function Login()
             </div>
         </div>
         <GameStats/>
-    </>
+    </div>
   );
 }

@@ -14,10 +14,15 @@
   }
 }
 
+#__next {
+  height: 100%;
+}
+
 body {
   color: rgb(var(--foreground-rgb));
   background: rgb(var(--background-rgb));
   height: 100vh;
+  overflow-y: hidden;
 }
 
 input[type=text] {

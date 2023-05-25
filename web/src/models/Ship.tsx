@@ -12,13 +12,13 @@ export interface ShipModel {
     fuel: ShipFuel
   }
   
-interface ShipRegistration {
+export interface ShipRegistration {
     name: string
     factionSymbol: string
     role: ShipRole
   }
 
-enum ShipRole {
+export enum ShipRole {
     "FABRICATOR",
     "HARVESTER",
     "HAULER",
@@ -35,7 +35,7 @@ enum ShipRole {
     "REFINERY"
 }
   
-interface ShipNav {
+export interface ShipNav {
     systemSymbol: string
     waypointSymbol: string
     route: ShipNavRoute
@@ -43,27 +43,27 @@ interface ShipNav {
     flightMode: ShipNavFlightMode
   }
 
-enum ShipNavStatus {
+export enum ShipNavStatus {
     "IN_TRANSIT",
     "IN_ORBIT",
     "DOCKED"
 }
 
-enum ShipNavFlightMode {
+export enum ShipNavFlightMode {
     "DRIFT",
     "STEALTH",
     "CRUISE",
     "BURN"
 }
   
-interface ShipNavRoute {
+export interface ShipNavRoute {
     destination: ShipDestination
     departure: ShipDeparture
     departureTime: string
     arrival: string
   }
   
-interface ShipDestination {
+export interface ShipDestination {
     symbol: string
     type: ShipNavWaypointType
     systemSymbol: string
@@ -71,7 +71,7 @@ interface ShipDestination {
     y: number
 }
   
-interface ShipDeparture {
+export interface ShipDeparture {
     symbol: string
     type: ShipNavWaypointType
     systemSymbol: string
@@ -79,7 +79,7 @@ interface ShipDeparture {
     y: number
 }
 
-enum ShipNavWaypointType {
+export enum ShipNavWaypointType {
     "PLANET",
     "GAS_GIANT",
     "MOON",
@@ -91,7 +91,7 @@ enum ShipNavWaypointType {
     "GRAVITY_WELL"
 }
   
-interface ShipCrew {
+export interface ShipCrew {
     current: number
     required: number
     capacity: number
@@ -100,12 +100,12 @@ interface ShipCrew {
     wages: number
   }
 
-enum ShipCrewRotation {
+export enum ShipCrewRotation {
     "STRICT",
     "RELAXED"
 }
   
-interface ShipFrame {
+export interface ShipFrame {
     symbol: ShipFrameSymbol
     name: string
     description: string
@@ -116,7 +116,7 @@ interface ShipFrame {
     requirements: ShipRequirements
   }
 
-enum ShipFrameSymbol {
+export enum ShipFrameSymbol {
     "FRAME_PROBE",
     "FRAME_DRONE",
     "FRAME_INTERCEPTOR",
@@ -134,7 +134,7 @@ enum ShipFrameSymbol {
     "FRAME_CARRIER"
 }
 
-interface ShipReactor {
+export interface ShipReactor {
     symbol: ShipReactorSymbol
     name: string
     description: string
@@ -142,7 +142,8 @@ interface ShipReactor {
     powerOutput: number
     requirements: ShipRequirements
   }
-enum ShipReactorSymbol {
+
+export enum ShipReactorSymbol {
     "REACTOR_SOLAR_I",
     "REACTOR_FUSION_I",
     "REACTOR_FISSION_I",
@@ -150,7 +151,7 @@ enum ShipReactorSymbol {
     "REACTOR_ANTIMATTER_I"
 }
   
-interface ShipEngine {
+export interface ShipEngine {
     symbol: ShipEngineSymbol
     name: string
     description: string
@@ -159,14 +160,14 @@ interface ShipEngine {
     requirements: ShipRequirements
   }
 
-enum ShipEngineSymbol {
+export enum ShipEngineSymbol {
     "ENGINE_IMPULSE_DRIVE_I",
     "ENGINE_ION_DRIVE_I",
     "ENGINE_ION_DRIVE_II",
     "ENGINE_HYPER_DRIVE_I"
   }
   
-interface ShipModule {
+export interface ShipModule {
     symbol: ShipModuleSymbol
     capacity: number
     range: number
@@ -175,7 +176,7 @@ interface ShipModule {
     requirements: ShipRequirements
   }
 
-enum ShipModuleSymbol{
+export enum ShipModuleSymbol{
     "MODULE_MINERAL_PROCESSOR_I",
     "MODULE_CARGO_HOLD_I",
     "MODULE_CREW_QUARTERS_I",
@@ -195,7 +196,7 @@ enum ShipModuleSymbol{
     "MODULE_SHIELD_GENERATOR_II"
 }
 
-interface ShipMount {
+export interface ShipMount {
     symbol: ShipMountSymbol
     name: string
     description: string
@@ -204,7 +205,7 @@ interface ShipMount {
     requirements: ShipRequirements
   }
 
-enum ShipMountSymbol {
+export enum ShipMountSymbol {
     "MOUNT_GAS_SIPHON_I",
     "MOUNT_GAS_SIPHON_II",
     "MOUNT_GAS_SIPHON_III",
@@ -222,7 +223,7 @@ enum ShipMountSymbol {
     "MOUNT_TURRET_I"
 }
 
-enum Deposits {
+export enum Deposits {
     "QUARTZ_SAND",
     "SILICON_CRYSTALS",
     "PRECIOUS_STONES",
@@ -239,31 +240,31 @@ enum Deposits {
     "MERITIUM_ORE"
 }
   
-interface ShipCargo {
+export interface ShipCargo {
     capacity: number
     units: number
     inventory: ShipCargoItem[]
   }
   
-interface ShipCargoItem {
+export interface ShipCargoItem {
     symbol: string
     name: string
     description: string
     units: number
   }
   
-interface ShipFuel {
+export interface ShipFuel {
     current: number
     capacity: number
     consumed: FuelConsumed
   }
   
-interface FuelConsumed {
+export interface FuelConsumed {
     amount: number
     timestamp: string
   }
 
-interface ShipRequirements {
+export interface ShipRequirements {
     power: number
     crew: number
     slots: number

@@ -2,13 +2,13 @@ import React, { useState, useEffect } from "react";
 import { GetSystemsAsJSONAsync } from '../pages/api/SystemService'
 import {System} from "../models/System"
 
-// component 
-export const UniverseMap = () => 
+
+export const UniverseMap = ({callback}:any) => 
 {
     const [systems, setSystems] = useState<System[]>();
 
     let coordMaxValue: number = 0;
-    let systemPointRadius: number = 50;
+    let systemPointRadius: number = 25;
 
     let draggin: boolean = false;
 
@@ -109,10 +109,10 @@ export const UniverseMap = () =>
         function StartDrag(event: any) 
         {
             draggin = true;
-            startGlobal = point.matrixTransform(svg.getScreenCTM().inverse());
-            /*startGlobal.x = event.clientX;
+            startGlobal = point.matrixTransform(svg.getScreenCTM());
+            startGlobal.x = event.clientX;
             startGlobal.y = event.clientY;
-
+            /*
             console.log(point.matrixTransform(svg.getScreenCTM().inverse()));
             console.log(event.clientX + " | " + event.clientY);*/
         }
@@ -142,7 +142,8 @@ export const UniverseMap = () =>
     //https://codepen.io/osublake/pen/oGoyYb
     const onClick = (event: any) => 
     {
-        console.log(event.target.id);
+        console.log(systems);
+        callback(event.target.id);
     }
 
     return (
@@ -150,8 +151,12 @@ export const UniverseMap = () =>
             <svg id="universeSvg" viewBox="-500 -500 1000 1000" className="h-full w-full bg-slate-900">
                 {systems?.map((system) => (
                     <g key={system.symbol}>
-                        <text key={system.symbol+"_"+system.x+"_"+system.y+"_name"} x={system.x-(3*system.symbol.length)} y={system.y-6-systemPointRadius} className="text-[50] fill-white select-none">{system.symbol}</text>
-                        <circle id={system.symbol} key={system.symbol+"_"+system.x+"_"+system.y} r={systemPointRadius} cx={system.x} cy={system.y} className="fill-white" onClick={onClick}/>
+                        <text key={system.symbol+"_"+system.x+"_"+system.y+"_name"} 
+                            x={system.x-(3*system.symbol.length)} y={system.y-6-systemPointRadius} 
+                            className="text-[50] fill-white select-none">{system.symbol}</text>
+                        <circle id={system.symbol} key={system.symbol+"_"+system.x+"_"+system.y} r={systemPointRadius} cx={system.x} cy={system.y} 
+                            className="fill-white hover:stroke-blue-500 hover:stroke-[10px]" 
+                        onClick={onClick}/>
                     </g>
                 ))}
             </svg>
