@@ -1,4 +1,3 @@
-import { Faction } from "@/components/faction";
 import { Market } from "@/models/Market";
 import { Shipyard } from "@/models/Shipyard";
 import { System } from "@/models/System";

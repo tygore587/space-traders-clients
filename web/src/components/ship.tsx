@@ -1,24 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import { ShipModel } from "@/models/Ship";
 
 interface IShipData
 {
     shipData: ShipModel
+    active?: boolean
     callback: any
 }
 
-export const Ship = ({shipData, callback}:IShipData) =>
+const shipdiv: string = "flex flex-col justify-start bg-slate-800 pl-[1em] pr-[1em] pt-[0.2em] pb-[0.5em] border-[0.15em] rounded-md h-fit select-none"
+
+export const Ship = ({shipData, active, callback}:IShipData) =>
 {
     let ship: ShipModel = shipData;
 
     return (
-        <div className="
-            flex flex-col justify-start 
-            bg-slate-800 
-            pl-[1em] pr-[1em] pt-[0.2em] pb-[0.5em] 
-            border-[0.15em] rounded-md border-indigo-500/50 
-            hover:border-indigo-500 
-            h-fit w-fit" 
+        <div className={shipdiv + (active ? " border-orange-500" : " border-indigo-500/50 hover:border-indigo-500")}
             onClick={() => callback(ship)} 
         >
             <p className="text-orange-500 font-bold">{ship.symbol} ({ship?.registration.role} {ship.frame.name.replace("Frame ", "")})</p>

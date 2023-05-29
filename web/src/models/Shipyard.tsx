@@ -1,4 +1,6 @@
+import { Interface } from "readline"
 import { ShipEngine, ShipFrame, ShipModule, ShipMount, ShipReactor } from "./Ship"
+import { Agent } from "./Agent"
 
 export interface Shipyard {
     symbol: string
@@ -7,7 +9,11 @@ export interface Shipyard {
     ships: ShipyardShip[]
   }
   
-  export enum ShipType {
+export interface ShipType {
+  type: ShipTypeEnum
+}
+
+  export enum ShipTypeEnum {
     "SHIP_PROBE",
     "SHIP_MINING_DRONE",
     "SHIP_INTERCEPTOR",
@@ -29,7 +35,7 @@ export interface Shipyard {
   }
 
   export interface ShipyardShip {
-    type: ShipType
+    type: ShipTypeEnum
     name: string
     description: string
     purchasePrice: number
@@ -40,3 +46,8 @@ export interface Shipyard {
     mounts: ShipMount[]
   }
   
+export interface IShipPurchase {
+  agent: Agent
+  ship: ShipyardShip
+  transaction: Transaction
+}

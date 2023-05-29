@@ -1,3 +1,10 @@
+import { Agent } from '@/models/Agent';
+import { ShipModel } from '@/models/Ship';
 import { createContext } from 'react';
 
-export let DashboardShowComponentContext = createContext<number>(1);
+interface IContext {
+    agent?: Agent
+    shiplist?: ShipModel[]
+}
+
+//export let AgentContext = createContext<Agent>(undef);

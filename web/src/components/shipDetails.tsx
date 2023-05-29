@@ -1,11 +1,27 @@
 import React, { useEffect, useState } from "react";
-import { ShipModel } from "@/models/Ship";
+import { ShipModel, ShipModuleSymbol, ShipMountSymbol } from "@/models/Ship";
 import { ShipActionPanel } from "./shipActionPanel";
+
+interface ISimpleModule {
+    symbol: ShipModuleSymbol
+    count: number
+}
+
+interface ISimpleMount {
+    symbol: ShipMountSymbol
+    count: number
+}
 
 export const ShipDetails = ({shipData}:any) =>
 {
     let ship: ShipModel = shipData;
 
+    let moduleMap: Map<ShipModuleSymbol, number> = new Map<ShipModuleSymbol, number>();
+    let mountMap: Map<ShipMountSymbol, number> = new Map<ShipMountSymbol, number>();
+
+    let simpleModuleList: ISimpleModule[] = [];
+    let simpleMountList: ISimpleMount[] = [];
+    
     let powerConsumption = 0;
     let usedModuleSlots = 0;
 
@@ -15,9 +31,32 @@ export const ShipDetails = ({shipData}:any) =>
     ship?.modules.forEach(module => {
         usedModuleSlots += module.requirements.slots; 
         powerConsumption += module.requirements.power;
+
+        let val: number = moduleMap.get(module.symbol) ?? 0;
+        moduleMap = moduleMap.set(module.symbol, val+1);
     });
+
     ship?.mounts.forEach(mount => {
         powerConsumption += mount.requirements.power;
+
+        let val: number = mountMap.get(mount.symbol) ?? 0;
+        mountMap.set(mount.symbol, val+1)
+    });
+
+    moduleMap.forEach((c,s) => {
+        let simpleModule: ISimpleModule = {
+            symbol: s,
+            count: c
+        }
+        simpleModuleList.push(simpleModule);
+    });
+    
+    mountMap.forEach((c,s) => {
+        let simpleMount: ISimpleMount = {
+            symbol: s,
+            count: c
+        }
+        simpleMountList.push(simpleMount);
     });
 
     let counter: number = 0;
@@ -53,10 +92,11 @@ export const ShipDetails = ({shipData}:any) =>
                     <div>
                         <p className="text-orange-500 font-bold">Modules: {usedModuleSlots} / {ship?.frame.moduleSlots}</p>
                         <ul className="list-disc list-inside pl-[0.2em] flex flex-col gap-2 marker:text-orange-500">
-                            {ship?.modules.map((module) => 
-                                <li key={module?.symbol + counter++}>{module?.name}
-                                    <p className="text-xs ml-[2em]">{module?.capacity ? "Capacity: "+ module?.capacity : ""}</p>
-                                    <p className="text-xs ml-[2em]">{module?.range ? "Range: "+ module?.range : ""}</p>
+                            {simpleModuleList.map((module) => 
+                                <li key={module?.symbol + counter++}>
+                                    {module.count > 1 ? module.count + "x " : "" }{ship?.modules.find((m) => m.symbol === module.symbol)?.name}
+                                    <p className="text-xs ml-[2em]">{ship?.modules.find((m) => m.symbol === module.symbol)?.capacity ? "Capacity: "+ ship?.modules.find((m) => m.symbol === module.symbol)?.capacity : ""}</p>
+                                    <p className="text-xs ml-[2em]">{ship?.modules.find((m) => m.symbol === module.symbol)?.range ? "Range: "+ ship?.modules.find((m) => m.symbol === module.symbol)?.range : ""}</p>
                                 </li>
                             )}
                         </ul>
@@ -64,8 +104,11 @@ export const ShipDetails = ({shipData}:any) =>
                     <div>
                         <p className="text-orange-500 font-bold">Mounts: {ship?.mounts.length} / {ship?.frame.mountingPoints}</p>
                         <ul className="list-disc list-inside pl-[0.2em] flex flex-col gap-2 marker:text-orange-500">
-                            {ship?.mounts.map((mount) => 
-                                <li key={mount?.symbol + counter++}>{mount?.name}</li>
+                            {simpleMountList.map((mount) => 
+                                <li key={mount?.symbol + counter++}>
+                                    {mount.count > 1 ? mount.count + "x " : "" }{ship?.mounts.find((m) => m.symbol === mount.symbol)?.name}
+                                    <p className="text-xs ml-[2em]">{(ship?.mounts.find((m) => m.symbol === mount.symbol)?.strength ? "Strength: " + ship?.mounts.find((m) => m.symbol === mount.symbol)?.strength : "")}</p>
+                                </li>
                             )}
                         </ul>
                     </div>

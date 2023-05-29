@@ -1,4 +1,5 @@
 import { ShipModel } from "@/models/Ship"
+import { IShipPurchase, ShipTypeEnum } from "@/models/Shipyard";
 
 export async function GetShipListAsync(page: number = 1, limit: number = 20)
 {
@@ -26,6 +27,46 @@ export async function GetShipListAsync(page: number = 1, limit: number = 20)
         let result = await response.json();
 
         let data: ShipModel[] = result.data;
+        
+        return data;
+
+    } catch (error) {
+        return null;
+    }
+}
+
+export async function PurchaseShipAsync(shipType: ShipTypeEnum, waypointSymbol: string)
+{
+    let token: string = localStorage.getItem('token') ?? "";
+
+    if (token === "")
+    {
+        return null;
+    }
+
+    const url = 'https://api.spacetraders.io/v2/my/ships';
+	const options = {
+		method: 'POST',
+		headers: {
+            'Content-Type': 'application/json',
+		    Accept: 'application/json',
+            Authorization: 'Bearer ' + token
+		},
+        body: '{"shipType":"' + shipType.toString() + '","waypointSymbol":"' + waypointSymbol + '"}'
+	};
+
+    try {
+
+        let response: Response = await fetch(url, options);
+
+        if (!response.ok)
+        {
+            return null;
+        }
+
+        let result = await response.json();
+
+        let data: IShipPurchase = result.data;
         
         return data;
 

@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { GetMarketAsync, GetWaypointsAsync } from '../pages/api/SystemService'
+import { GetMarketAsync, GetShipyardAsync, GetWaypointsAsync } from '../pages/api/SystemService'
 import { Waypoint, WaypointTrait, WaypointTraitSymbol } from "@/models/Waypoint";
 import { WaypointDetails } from "./waypointDetails";
 import { Market } from "@/models/Market";
+import { Shipyard } from "@/models/Shipyard";
+import { ShipModel } from "@/models/Ship";
+import { SystemShipList } from "./systemShiplist";
+import { Agent } from "@/models/Agent";
 
 interface IViewBox {
     x: number
@@ -12,12 +16,15 @@ interface IViewBox {
 }
 
 interface ISystem {
+    agent?: Agent
+    shiplist?: any
     presetSystemSymbol?: string
+    globalDataFunction?: any
 }
 
 
 // component 
-export const SystemMap = ({presetSystemSymbol}: ISystem) => 
+export const SystemMap = ({agent, presetSystemSymbol, shiplist, globalDataFunction}: ISystem) => 
 {
     let viewbox: IViewBox = {
         x: -75,
@@ -26,16 +33,24 @@ export const SystemMap = ({presetSystemSymbol}: ISystem) =>
         h: 150
     }
 
+    const [symbol, setSymbol] = useState<string>(presetSystemSymbol ?? "");
+    const [shipList, setShipList] = useState<ShipModel[]>(shiplist);
+
     const [waypoint, setWaypoint] = useState<Waypoint[]>();
     const [systemSymbol, setSystemSymbol] = useState<string>();
-    const [symbol, setSymbol] = useState<string>(presetSystemSymbol ?? "");
+    
     const [systemViewbox, setSystemViewbox] = useState<IViewBox>(viewbox);
     const [waypointMap, setWaypointMap] = useState<Map<string, Waypoint>>();
     const [selectedWaypoint, setSelectedWaypoint] = useState<Waypoint>();
     const [marketData, setMarketData] = useState<Market>();
+    const [shipyardData, setShipyardData] = useState<Shipyard>();
 
     let orbitList: string[] = [];
     let waypointDict: Map<string, Waypoint> = new Map<string, Waypoint>();
+
+    let shortMarketSymbol: string = "\u2696";
+    let shortShipyardSymbol: string = "\u2693";
+    let shortShipSymbol: string = "\uD83D\uDE80";
 
     const fetchWaypoints= async () => 
     {
@@ -75,13 +90,6 @@ export const SystemMap = ({presetSystemSymbol}: ISystem) =>
 
             coords = Math.ceil(coords * 2.1);
 
-            /*let systemViewbox: IViewBox = {
-                x: -1 * Math.ceil(coords/2),
-                y: -1 * Math.ceil(coords/2), 
-                h: coords,
-                w: coords
-            }*/
-
             let systemViewbox: IViewBox = {
                 x: x-5,
                 y: y-5, 
@@ -94,6 +102,7 @@ export const SystemMap = ({presetSystemSymbol}: ISystem) =>
             setWaypoint(data);
 
             setWaypointMap(waypointDict);
+            setSelectedWaypoint(undefined);
         }
     };
 
@@ -121,6 +130,30 @@ export const SystemMap = ({presetSystemSymbol}: ISystem) =>
         setMarketData(response);
     };
 
+    const fetchShipyard= async (waypoint?: Waypoint) => 
+    {
+        if (!waypoint)
+        {
+            setShipyardData(undefined);
+            return;
+        }
+
+        let waypointTraits: WaypointTrait[] = waypoint?.traits ?? [];
+        let systemSymbol: string = waypoint?.systemSymbol ?? "";
+        let symbol: string = waypoint?.symbol ?? "";
+        let hasShipyard: boolean = waypointTraits.findIndex(trait => trait.symbol.toString() === WaypointTraitSymbol[WaypointTraitSymbol.SHIPYARD]) >= 0;
+
+        if (waypointTraits.length <= 0 || systemSymbol === "" || symbol === "" || !hasShipyard)
+        {
+            setShipyardData(undefined);
+            return;
+        } 
+
+        const response: any = await GetShipyardAsync(systemSymbol, symbol);
+
+        setShipyardData(response);
+    };
+
     useEffect(() => 
     {
         if (presetSystemSymbol != null && presetSystemSymbol != "")
@@ -133,6 +166,10 @@ export const SystemMap = ({presetSystemSymbol}: ISystem) =>
     {
         setMarketData(undefined);
         fetchMarket(waypointMap?.get(event.target.id));
+
+        setShipyardData(undefined);
+        fetchShipyard(waypointMap?.get(event.target.id));
+
         setSelectedWaypoint(waypointMap?.get(event.target.id));
     }
 
@@ -144,7 +181,7 @@ export const SystemMap = ({presetSystemSymbol}: ISystem) =>
     }
 
     return (
-        <div id="systemBox" className="grid grid-cols-[30%_70%] grid-rows-[6%_35%_59%] bg-slate-900 px-[1em] pb-[1em] gap-[1em] h-full w-full">
+        <div id="systemBox" className="grid grid-cols-[30%_50%_20%] grid-rows-[6%_35%_59%] bg-slate-900 px-[0.5em] mb-[0.25em] gab-x-[0.5em] h-full w-full">
             <div id="input" className="w-fit col-start-1 col-span-2 row-start-1">
                 <input name="symbol" id="symbol" type="text" placeholder='system Symbol' onChange={e => setSymbol(e.target.value)}></input>
                 <button className='text-zinc-800 bg-white mt-2 ml-[0.2em] px-[0.4em] py-[0.1em] border-[0.2em] border-solid rounded-lg border-sky-600 hover:border-sky-500' 
@@ -174,7 +211,7 @@ export const SystemMap = ({presetSystemSymbol}: ISystem) =>
                     
                     <g key={wp.symbol}>
                         
-                        <circle id={wp.symbol + "Orbit"} key={wp.symbol+"Orbit"+"_"+wp.x+"_"+wp.y} r={Math.sqrt(wp.x*wp.x + wp.y*wp.y)} cx="0" cy="0"
+                        <circle id={wp.symbol + "Orbit"} key={wp.symbol+"Orbit"+"_"+wp.x+"_"+wp.y} r={Math.sqrt(wp.x*wp.x + wp.y*wp.y)} cx="0" cy="0" strokeDasharray={"1,1"}
                         className="fill-none stroke-indigo-900/50 stroke-[0.2px]"/>
 
                         <circle id={wp.symbol} key={wp.symbol+"_"+wp.x+"_"+wp.y} r="1" cx={wp.x} cy={wp.y} 
@@ -209,28 +246,27 @@ export const SystemMap = ({presetSystemSymbol}: ISystem) =>
                 <hr className="border-orange-500 mx-[0.1em] my-[0.3em]"/>
                 {waypoint?.map((wp) => 
                     <div key={wp.symbol} className="select-none w-full">
-                        <div id={wp.symbol} className="flex flex-row justify-between w-full px-[0.5em]
-                                border border-none rounded-lg 
-                                hover:bg-slate-800"
-                        key={wp.symbol + "_list"} onClick={onClick}>
+                        <div id={wp.symbol} className={"flex flex-row justify-between w-full px-[0.5em] border border-none rounded-lg hover:bg-slate-800 " + (selectedWaypoint?.symbol === wp.symbol ? "bg-slate-800" : "") }
+                            key={wp.symbol + "_list"} onClick={onClick}
+                        >
                             <div id={wp.symbol} className="text-orange-500 font-bold">{wp.symbol}</div>
                             <div id={wp.symbol}>{wp.type}</div>
                             <div id={wp.symbol}>{wp.x}, {wp.y}</div>
                             <div id={wp.symbol}>
-                                {wp.traits.find((trait) => trait.symbol.toString() === "MARKETPLACE")?.name} 
-                                {wp.traits.find((trait) => trait.symbol.toString() === "SHIPYARD")?.name}
+                                {shipList?.find((s) => s.nav.route.departure.symbol == wp.symbol) ? shortShipSymbol : ""}
+                                {wp.traits.find((trait) => trait.symbol.toString() === "MARKETPLACE") ? shortMarketSymbol : ""} 
+                                {wp.traits.find((trait) => trait.symbol.toString() === "SHIPYARD") ? shortShipyardSymbol : ""}
                             </div>
                         </div>
                         {wp.orbitals?.map((orbital) =>
-                            <div id={orbital.symbol} className="flex flex-row justify-between px-[0.5em] pl-[3em]
-                                border border-none rounded-lg 
-                                hover:bg-slate-800" 
+                            <div id={orbital.symbol} className={"flex flex-row justify-between px-[0.5em] pl-[3em] border border-none rounded-lg hover:bg-slate-800 " + (selectedWaypoint?.symbol === orbital.symbol ? "bg-slate-800" : "")}
                             key={orbital.symbol + "_list_orbital"} onClick={onClick}>
                                 <div id={orbital.symbol} className="text-orange-500 text-xs">{orbital.symbol}</div>
                                 <div id={orbital.symbol} className="text-xs">{waypointMap?.get(orbital.symbol)?.type}</div>
                                 <div id={orbital.symbol} className="text-xs">
-                                    {waypointMap?.get(orbital.symbol)?.traits.find((trait) => trait.symbol.toString() === "MARKETPLACE")?.name} 
-                                    {waypointMap?.get(orbital.symbol)?.traits.find((trait) => trait.symbol.toString() === "SHIPYARD")?.name}
+                                    {shipList?.find((s) => s.nav.route.departure.symbol == orbital.symbol) ? shortShipSymbol : ""}
+                                    {waypointMap?.get(orbital.symbol)?.traits.find((trait) => trait.symbol.toString() === "MARKETPLACE") ? shortMarketSymbol : ""} 
+                                    {waypointMap?.get(orbital.symbol)?.traits.find((trait) => trait.symbol.toString() === "SHIPYARD") ? shortShipyardSymbol : ""}
                                 </div>
                             </div>
                         )}
@@ -239,8 +275,19 @@ export const SystemMap = ({presetSystemSymbol}: ISystem) =>
                 )}
             </div>
 
-            <div className="col-start-2 row-start-1 row-span-3 h-full w-full">
-                {selectedWaypoint && <WaypointDetails waypointData={selectedWaypoint} marketData={marketData}/>}
+            <div className="col-start-2 row-start-1 row-span-3 w-full">
+                {selectedWaypoint && <WaypointDetails 
+                    agent={agent} 
+                    shiplist={shipList} 
+                    waypointData={selectedWaypoint} 
+                    marketData={marketData} 
+                    shipyardData={shipyardData} 
+                    globalDataFunction={globalDataFunction}
+                />}
+            </div>
+
+            <div className="col-start-3 row-start-1 row-span-3">
+                <SystemShipList shiplist={shipList.filter((s) => s.nav.systemSymbol === systemSymbol)}/>
             </div>
         </div>
     );

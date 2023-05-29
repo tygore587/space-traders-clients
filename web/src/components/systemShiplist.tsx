@@ -1,0 +1,27 @@
+import React, { useState, useEffect } from "react";
+import {Ship} from "@/components/ship";
+import { ShipModel } from "@/models/Ship";
+
+
+export const SystemShipList = ({shiplist, globalDataFunction}:any) =>
+{
+    const [activeShip, setActiveShip] = useState<string>("")
+
+    let systemShips: ShipModel[] = shiplist;
+
+    function SelectShip(ship: ShipModel)
+    {
+        setActiveShip(ship.symbol)
+        //setSelectedShip(ship);
+    }
+
+    return (
+        <div id="systemShipList" className="flex flex-row justify-between h-full bg-slate-900">
+            <div className="flex flex-col gap-[1em] w-max overflow-y-auto ">
+                {systemShips?.map((ship) => (
+                    <Ship key={ship.symbol} shipData={ship} active={activeShip === ship.symbol} callback={SelectShip}/>
+                ))}
+            </div>
+        </div>
+    )
+}
