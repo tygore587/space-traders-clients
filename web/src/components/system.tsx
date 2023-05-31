@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { GetMarketAsync, GetShipyardAsync, GetWaypointsAsync } from '../pages/api/SystemService'
-import { Waypoint, WaypointTrait, WaypointTraitSymbol } from "@/models/Waypoint";
+import { IWaypoint, IWaypointTrait, WaypointTraitSymbol } from "@/models/Waypoint";
 import { WaypointDetails } from "./waypointDetails";
-import { Market } from "@/models/Market";
-import { Shipyard } from "@/models/Shipyard";
-import { ShipModel } from "@/models/Ship";
+import { IMarket } from "@/models/Market";
+import { IShipyard } from "@/models/Shipyard";
+import { IShip } from "@/models/Ship";
 import { SystemShipList } from "./systemShiplist";
 import { Agent } from "@/models/Agent";
 
@@ -34,19 +34,19 @@ export const SystemMap = ({agent, presetSystemSymbol, shiplist, globalDataFuncti
     }
 
     const [symbol, setSymbol] = useState<string>(presetSystemSymbol ?? "");
-    const [shipList, setShipList] = useState<ShipModel[]>(shiplist);
+    const [shipList, setShipList] = useState<IShip[]>(shiplist);
 
-    const [waypoint, setWaypoint] = useState<Waypoint[]>();
+    const [waypoint, setWaypoint] = useState<IWaypoint[]>();
     const [systemSymbol, setSystemSymbol] = useState<string>();
     
     const [systemViewbox, setSystemViewbox] = useState<IViewBox>(viewbox);
-    const [waypointMap, setWaypointMap] = useState<Map<string, Waypoint>>();
-    const [selectedWaypoint, setSelectedWaypoint] = useState<Waypoint>();
-    const [marketData, setMarketData] = useState<Market>();
-    const [shipyardData, setShipyardData] = useState<Shipyard>();
+    const [waypointMap, setWaypointMap] = useState<Map<string, IWaypoint>>();
+    const [selectedWaypoint, setSelectedWaypoint] = useState<IWaypoint>();
+    const [marketData, setMarketData] = useState<IMarket>();
+    const [shipyardData, setShipyardData] = useState<IShipyard>();
 
     let orbitList: string[] = [];
-    let waypointDict: Map<string, Waypoint> = new Map<string, Waypoint>();
+    let waypointDict: Map<string, IWaypoint> = new Map<string, IWaypoint>();
 
     let shortMarketSymbol: string = "\u2696";
     let shortShipyardSymbol: string = "\u2693";
@@ -63,7 +63,7 @@ export const SystemMap = ({agent, presetSystemSymbol, shiplist, globalDataFuncti
 
         if(response == null) return;
 
-        let data: Waypoint[] = response;
+        let data: IWaypoint[] = response;
 
         let coords: number = 0;
 
@@ -106,7 +106,7 @@ export const SystemMap = ({agent, presetSystemSymbol, shiplist, globalDataFuncti
         }
     };
 
-    const fetchMarket = async (waypoint?: Waypoint) => 
+    const fetchMarket = async (waypoint?: IWaypoint) => 
     {
         if (!waypoint)
         {
@@ -114,7 +114,7 @@ export const SystemMap = ({agent, presetSystemSymbol, shiplist, globalDataFuncti
             return;
         }
 
-        let waypointTraits: WaypointTrait[] = waypoint?.traits ?? [];
+        let waypointTraits: IWaypointTrait[] = waypoint?.traits ?? [];
         let systemSymbol: string = waypoint?.systemSymbol ?? "";
         let symbol: string = waypoint?.symbol ?? "";
         let hasMarket: boolean = waypointTraits.findIndex(trait => trait.symbol.toString() === WaypointTraitSymbol[WaypointTraitSymbol.MARKETPLACE]) >= 0;
@@ -130,7 +130,7 @@ export const SystemMap = ({agent, presetSystemSymbol, shiplist, globalDataFuncti
         setMarketData(response);
     };
 
-    const fetchShipyard= async (waypoint?: Waypoint) => 
+    const fetchShipyard= async (waypoint?: IWaypoint) => 
     {
         if (!waypoint)
         {
@@ -138,7 +138,7 @@ export const SystemMap = ({agent, presetSystemSymbol, shiplist, globalDataFuncti
             return;
         }
 
-        let waypointTraits: WaypointTrait[] = waypoint?.traits ?? [];
+        let waypointTraits: IWaypointTrait[] = waypoint?.traits ?? [];
         let systemSymbol: string = waypoint?.systemSymbol ?? "";
         let symbol: string = waypoint?.symbol ?? "";
         let hasShipyard: boolean = waypointTraits.findIndex(trait => trait.symbol.toString() === WaypointTraitSymbol[WaypointTraitSymbol.SHIPYARD]) >= 0;

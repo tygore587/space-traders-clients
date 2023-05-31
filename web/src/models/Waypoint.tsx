@@ -1,23 +1,23 @@
-import { Chart } from "./Chart"
-import { Faction } from "./Faction"
+import { IChart } from "./Chart"
+import { IFaction } from "./Faction"
 
-export interface Waypoint {
+export interface IWaypoint {
     symbol: string
     type: string
     systemSymbol: string
     x: number
     y: number
-    orbitals: WaypointOrbital[]
-    faction: Faction
-    traits: WaypointTrait[]
-    chart: Chart
+    orbitals: IWaypointOrbital[]
+    faction: IFaction
+    traits: IWaypointTrait[]
+    chart: IChart
   }
   
-export interface WaypointOrbital {
+export interface IWaypointOrbital {
     symbol: string
 }
 
-export interface WaypointTrait {
+export interface IWaypointTrait {
     symbol: WaypointTraitSymbol
     name: string
     description: string

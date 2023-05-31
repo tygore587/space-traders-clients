@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
 import {Ship} from "@/components/ship";
-import { ShipModel } from "@/models/Ship";
+import { IShip } from "@/models/Ship";
 
 
 export const SystemShipList = ({shiplist, globalDataFunction}:any) =>
 {
     const [activeShip, setActiveShip] = useState<string>("")
 
-    let systemShips: ShipModel[] = shiplist;
+    let systemShips: IShip[] = shiplist;
 
-    function SelectShip(ship: ShipModel)
+    function SelectShip(ship: IShip)
     {
         setActiveShip(ship.symbol)
         //setSelectedShip(ship);

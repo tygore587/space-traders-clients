@@ -1,7 +1,7 @@
-import { Market } from "@/models/Market";
-import { Shipyard } from "@/models/Shipyard";
-import { System } from "@/models/System";
-import { Waypoint } from "@/models/Waypoint";
+import { IMarket } from "@/models/Market";
+import { IShipyard } from "@/models/Shipyard";
+import { ISystem } from "@/models/System";
+import { IWaypoint } from "@/models/Waypoint";
 
 export async function GetSystemsAsJSONAsync() 
 {
@@ -17,7 +17,7 @@ export async function GetSystemsAsJSONAsync()
 
         let response: any = await fetch(url, options);
 
-        let data: System[] = await response.json();
+        let data: ISystem[] = await response.json();
 
         return data;
 
@@ -42,7 +42,7 @@ export async function GetSystemAsync(systemSymbol: string)
 
         let result = await response.json();
 
-        let data: System = result.data;
+        let data: ISystem = result.data;
         return data;
 
     } catch (error) {
@@ -67,7 +67,7 @@ export async function GetWaypointsAsync(systemSymbol: string, page: number = 1, 
 
         let result = await response.json();
 
-        let data: Waypoint[] = result.data;
+        let data: IWaypoint[] = result.data;
         return data;
 
     } catch (error) {
@@ -99,7 +99,7 @@ export async function GetMarketAsync(systemSymbol: string, waypointSymbol: strin
 
         let result = await response.json();
 
-        let data: Market = result.data;
+        let data: IMarket = result.data;
 
         return data;
 
@@ -132,7 +132,7 @@ export async function GetShipyardAsync(systemSymbol: string, waypointSymbol: str
 
         let result = await response.json();
 
-        let data: Shipyard = result.data;
+        let data: IShipyard = result.data;
 
         return data;
 

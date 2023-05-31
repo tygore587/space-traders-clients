@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { ShipModel } from "@/models/Ship";
+import { IShip } from "@/models/Ship";
 
 interface IShipData
 {
-    shipData: ShipModel
+    shipData: IShip
     active?: boolean
     callback: any
 }
@@ -12,7 +12,7 @@ const shipdiv: string = "flex flex-col justify-start bg-slate-800 pl-[1em] pr-[1
 
 export const Ship = ({shipData, active, callback}:IShipData) =>
 {
-    let ship: ShipModel = shipData;
+    let ship: IShip = shipData;
 
     return (
         <div className={shipdiv + (active ? " border-orange-500" : " border-indigo-500/50 hover:border-indigo-500")}

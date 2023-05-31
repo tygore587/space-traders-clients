@@ -1,20 +1,20 @@
-export interface System {
+export interface ISystem {
     symbol: string
     sectorSymbol: string
     type: string
     x: number
     y: number
-    waypoints: SystemWaypoint[]
-    factions: SystemFaction[]
+    waypoints: ISystemWaypoint[]
+    factions: ISystemFaction[]
 }
   
-interface SystemWaypoint {
+interface ISystemWaypoint {
     symbol: string
     type: string
     x: number
     y: number
 }
   
-interface SystemFaction {
+interface ISystemFaction {
     symbol: string
 }

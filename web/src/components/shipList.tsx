@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
 import {Ship} from "@/components/ship";
-import { ShipModel } from "@/models/Ship";
+import { IShip } from "@/models/Ship";
 import { ShipDetails } from "./shipDetails";
 
 
 export const ShipList = ({shiplist}:any) =>
 {
-    const [ships] = useState<ShipModel[]>(shiplist);
-    const [selectedShip, setSelectedShip] = useState<ShipModel>(shiplist[0]);
+    const [ships] = useState<IShip[]>(shiplist);
+    const [selectedShip, setSelectedShip] = useState<IShip>(shiplist[0]);
 
-    function SelectShip(ship: ShipModel)
+    function SelectShip(ship: IShip)
     {
         setSelectedShip(ship);
     }

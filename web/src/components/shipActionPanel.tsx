@@ -1,9 +1,9 @@
 import React from "react";
-import { ShipModel, ShipNavStatus, ShipNavWaypointType, ShipModuleSymbol } from "@/models/Ship";
+import { IShip, ShipNavStatus, ShipNavWaypointType, ShipModuleSymbol } from "@/models/Ship";
 
 interface IShipData
 {
-    shipData: ShipModel
+    shipData: IShip
     callback: any
 }
 
@@ -11,7 +11,7 @@ const buttonClass: string = 'text-zinc-800 bg-white px-[0.4em] py-[0.1em] border
 
 export const ShipActionPanel = ({shipData, callback}:IShipData) =>
 {
-    let ship: ShipModel = shipData;
+    let ship: IShip = shipData;
     
     return (
         <div className="

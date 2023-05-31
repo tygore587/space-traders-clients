@@ -1,18 +1,18 @@
-export interface ShipModel {
+export interface IShip {
     symbol: string
-    registration: ShipRegistration
-    nav: ShipNav
-    crew: ShipCrew
-    frame: ShipFrame
-    reactor: ShipReactor
-    engine: ShipEngine
-    modules: ShipModule[]
-    mounts: ShipMount[]
-    cargo: ShipCargo
-    fuel: ShipFuel
+    registration: IShipRegistration
+    nav: IShipNav
+    crew: IShipCrew
+    frame: IShipFrame
+    reactor: IShipReactor
+    engine: IShipEngine
+    modules: IShipModule[]
+    mounts: IShipMount[]
+    cargo: IShipCargo
+    fuel: IShipFuel
   }
   
-export interface ShipRegistration {
+export interface IShipRegistration {
     name: string
     factionSymbol: string
     role: ShipRole
@@ -35,10 +35,10 @@ export enum ShipRole {
     "REFINERY"
 }
   
-export interface ShipNav {
+export interface IShipNav {
     systemSymbol: string
     waypointSymbol: string
-    route: ShipNavRoute
+    route: IShipNavRoute
     status: ShipNavStatus
     flightMode: ShipNavFlightMode
   }
@@ -56,14 +56,14 @@ export enum ShipNavFlightMode {
     "BURN"
 }
   
-export interface ShipNavRoute {
-    destination: ShipDestination
-    departure: ShipDeparture
+export interface IShipNavRoute {
+    destination: IShipDestination
+    departure: IShipDeparture
     departureTime: string
     arrival: string
   }
   
-export interface ShipDestination {
+export interface IShipDestination {
     symbol: string
     type: ShipNavWaypointType
     systemSymbol: string
@@ -71,7 +71,7 @@ export interface ShipDestination {
     y: number
 }
   
-export interface ShipDeparture {
+export interface IShipDeparture {
     symbol: string
     type: ShipNavWaypointType
     systemSymbol: string
@@ -91,7 +91,7 @@ export enum ShipNavWaypointType {
     "GRAVITY_WELL"
 }
   
-export interface ShipCrew {
+export interface IShipCrew {
     current: number
     required: number
     capacity: number
@@ -105,7 +105,7 @@ export enum ShipCrewRotation {
     "RELAXED"
 }
   
-export interface ShipFrame {
+export interface IShipFrame {
     symbol: ShipFrameSymbol
     name: string
     description: string
@@ -113,7 +113,7 @@ export interface ShipFrame {
     moduleSlots: number
     mountingPoints: number
     fuelCapacity: number
-    requirements: ShipRequirements
+    requirements: IShipRequirements
   }
 
 export enum ShipFrameSymbol {
@@ -134,13 +134,13 @@ export enum ShipFrameSymbol {
     "FRAME_CARRIER"
 }
 
-export interface ShipReactor {
+export interface IShipReactor {
     symbol: ShipReactorSymbol
     name: string
     description: string
     condition: number
     powerOutput: number
-    requirements: ShipRequirements
+    requirements: IShipRequirements
   }
 
 export enum ShipReactorSymbol {
@@ -151,13 +151,13 @@ export enum ShipReactorSymbol {
     "REACTOR_ANTIMATTER_I"
 }
   
-export interface ShipEngine {
+export interface IShipEngine {
     symbol: ShipEngineSymbol
     name: string
     description: string
     condition: number
     speed: number
-    requirements: ShipRequirements
+    requirements: IShipRequirements
   }
 
 export enum ShipEngineSymbol {
@@ -167,13 +167,13 @@ export enum ShipEngineSymbol {
     "ENGINE_HYPER_DRIVE_I"
   }
   
-export interface ShipModule {
+export interface IShipModule {
     symbol: ShipModuleSymbol
     capacity: number
     range: number
     name: string
     description: string
-    requirements: ShipRequirements
+    requirements: IShipRequirements
   }
 
 export enum ShipModuleSymbol{
@@ -196,13 +196,13 @@ export enum ShipModuleSymbol{
     "MODULE_SHIELD_GENERATOR_II"
 }
 
-export interface ShipMount {
+export interface IShipMount {
     symbol: ShipMountSymbol
     name: string
     description: string
     strength: number
     deposits: Deposits[]
-    requirements: ShipRequirements
+    requirements: IShipRequirements
   }
 
 export enum ShipMountSymbol {
@@ -240,31 +240,31 @@ export enum Deposits {
     "MERITIUM_ORE"
 }
   
-export interface ShipCargo {
+export interface IShipCargo {
     capacity: number
     units: number
-    inventory: ShipCargoItem[]
+    inventory: IShipCargoItem[]
   }
   
-export interface ShipCargoItem {
+export interface IShipCargoItem {
     symbol: string
     name: string
     description: string
     units: number
   }
   
-export interface ShipFuel {
+export interface IShipFuel {
     current: number
     capacity: number
-    consumed: FuelConsumed
+    consumed: IFuelConsumed
   }
   
-export interface FuelConsumed {
+export interface IFuelConsumed {
     amount: number
     timestamp: string
   }
 
-export interface ShipRequirements {
+export interface IShipRequirements {
     power: number
     crew: number
     slots: number

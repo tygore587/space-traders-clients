@@ -1,4 +1,4 @@
-import { Faction } from "@/models/Faction"
+import { IFaction } from "@/models/Faction"
 
 export async function GetFactionListAsync(page: number = 1, limit: number = 20)
 {
@@ -17,7 +17,7 @@ export async function GetFactionListAsync(page: number = 1, limit: number = 20)
 
         let result = await response.json();
 
-        let data: Faction[] = result.data;
+        let data: IFaction[] = result.data;
         
         return data;
 

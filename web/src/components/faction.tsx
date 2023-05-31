@@ -1,6 +1,6 @@
 import { useState } from "react";
 import React from "react";
-import { Faction as FactionModel } from "@/models/Faction";
+import { IFaction as FactionModel } from "@/models/Faction";
 
 interface IFactionData
 {

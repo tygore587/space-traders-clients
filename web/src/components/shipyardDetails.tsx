@@ -1,15 +1,15 @@
 import React from "react";
-import {  ShipTypeEnum, Shipyard } from "@/models/Shipyard";
+import {  ShipTypeEnum, IShipyard } from "@/models/Shipyard";
 import { ShipyardShipDetails } from "./shipyardShipDetails";
 import { Agent } from "@/models/Agent";
-import { ShipModel } from "@/models/Ship";
+import { IShip } from "@/models/Ship";
 import { PurchaseShipAsync } from "@/pages/api/ShipService";
 
 const buttonClass: string = 'bg-slate-700 mt-[0.25em] px-[0.4em] pt-[0.1em] pb-[0.2em] border-[0.2em] border-solid rounded-lg border-sky-700 enabled:hover:bg-slate-600';
 
 interface IShipyardData {
     agent?: Agent
-    shiplist: ShipModel[]
+    shiplist: IShip[]
     shipyardData: any
     globalDataFunction?: any
 }
@@ -17,7 +17,7 @@ interface IShipyardData {
 
 export const ShipyardDetails = ({agent, shiplist, shipyardData, globalDataFunction}: IShipyardData) =>
 {
-    let shipyard: Shipyard = shipyardData;
+    let shipyard: IShipyard = shipyardData;
 
     const GetPurchasedShip = async (shipType: ShipTypeEnum, waypointSymbol: string) => 
     {

@@ -1,33 +1,33 @@
-export interface SpaceTradersStats {
+export interface ISpaceTradersStats {
     status:       string;
-    stats:        Stats;
-    leaderboards: Leaderboards;
-    serverResets: ServerReset;
+    stats:        IStats;
+    leaderboards: ILeaderboards;
+    serverResets: IServerReset;
 }
 
-export interface Leaderboards {
-    mostCredits:         MostCredit[];
-    mostSubmittedCharts: MostSubmittedChart[];
+export interface ILeaderboards {
+    mostCredits:         IMostCredit[];
+    mostSubmittedCharts: IMostSubmittedChart[];
 }
 
-export interface MostCredit {
+export interface IMostCredit {
     agentSymbol: string;
     credits:     number;
 }
 
-export interface MostSubmittedChart {
+export interface IMostSubmittedChart {
     agentSymbol: string;
     chartCount:  number;
 }
 
-export interface Stats {
+export interface IStats {
     agents:    number;
     ships:     number;
     systems:   number;
     waypoints: number;
 }
 
-export interface ServerReset {
+export interface IServerReset {
     frequency: string;
     next: Date;
 }

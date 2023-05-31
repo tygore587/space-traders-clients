@@ -1,4 +1,4 @@
-import { Stats } from "../../models/Spacetradersstats"
+import { IStats } from "../../models/Spacetradersstats"
 
 export async function GetStatsAsync()
 {
@@ -16,7 +16,7 @@ export async function GetStatsAsync()
 
         let result = await response.json();
 
-        let data: Stats = result;
+        let data: IStats = result;
 
         return data;
 

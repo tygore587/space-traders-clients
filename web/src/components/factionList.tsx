@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { GetFactionListAsync } from "@/pages/api/FactionService";
-import { Faction as FactionModel } from "@/models/Faction";
+import { IFaction } from "@/models/Faction";
 import { Faction } from "./faction";
 
 export const FactionList = () =>
 {
-    const [factions, setFactions] = useState<FactionModel[]>();
+    const [factions, setFactions] = useState<IFaction[]>();
 
     const fetchFactions= async () => 
     {
         const response: any = await GetFactionListAsync();
 
-        let data: FactionModel[] = response;
+        let data: IFaction[] = response;
 
         setFactions(data);
     };

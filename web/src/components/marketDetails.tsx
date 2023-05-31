@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Market } from "@/models/Market";
+import { IMarket } from "@/models/Market";
 
 const hrClass: string = 'border-orange-500 mx-[0.1em] my-[0.3em]';
 
 export const MarketDetails = ({marketData, globalDataFunction}: any) =>
 {
-    let market: Market = marketData;
+    let market: IMarket = marketData;
     let itemSymbolMap: Map<string, string> = new Map<string, string>();
 
     if (market)

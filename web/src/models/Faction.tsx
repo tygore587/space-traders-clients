@@ -1,13 +1,13 @@
-export interface Faction 
+export interface IFaction 
 {
     symbol: string
     name: string
     description: string
     headquarters: string
-    traits: FactionTrait[]
+    traits: IFactionTrait[]
 }
 
-interface FactionTrait 
+interface IFactionTrait 
 {
     symbol: Trait
     name: string

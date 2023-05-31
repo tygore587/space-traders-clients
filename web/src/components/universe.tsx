@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { GetSystemsAsJSONAsync } from '../pages/api/SystemService'
-import {System} from "../models/System"
+import {ISystem} from "../models/System"
 
 
 export const UniverseMap = ({callback}:any) => 
 {
-    const [systems, setSystems] = useState<System[]>();
+    const [systems, setSystems] = useState<ISystem[]>();
 
     let coordMaxValue: number = 0;
     let systemPointRadius: number = 25;
@@ -16,7 +16,7 @@ export const UniverseMap = ({callback}:any) =>
     {
         const response: any = await GetSystemsAsJSONAsync();
 
-        let data: System[] = response;
+        let data: ISystem[] = response;
 
         if (data != null && data.length > 0)
         {

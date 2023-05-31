@@ -1,17 +1,17 @@
 import React, { useState, useEffect, use } from "react";
 import { GetStatsAsync } from '../pages/api/SpaceTradersStatsService'
-import {SpaceTradersStats} from "../models/Spacetradersstats"
+import {ISpaceTradersStats} from "../models/Spacetradersstats"
 
 export const GameStats = () => 
 {
-    const [stats, setStats] = useState<SpaceTradersStats>();
+    const [stats, setStats] = useState<ISpaceTradersStats>();
     const [resetDate, setResetDate] = useState<string>();
 
     const fetchStats = async () => 
     {
         const response: any = await GetStatsAsync();
 
-        let data: SpaceTradersStats = response;
+        let data: ISpaceTradersStats = response;
 
         let dateString: string = data?.serverResets?.next?.toString();
 

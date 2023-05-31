@@ -1,8 +1,7 @@
 import React, { useState } from "react";
-import { ShipyardShip } from "@/models/Shipyard";
-import { ShipModel, ShipModuleSymbol, ShipMountSymbol } from "@/models/Ship";
+import { IShipyardShip } from "@/models/Shipyard";
+import { ShipModuleSymbol, ShipMountSymbol } from "@/models/Ship";
 import { PurchaseShipAsync } from "@/pages/api/ShipService";
-import { Agent } from "@/models/Agent";
 
 interface IShipData {
     shiyardWaypointSymbol: string
@@ -26,7 +25,7 @@ export const ShipyardShipDetails = ({shiyardWaypointSymbol, shipData, globalData
 {
     const [showDetails, setShowDetails] = useState<boolean>(false);
 
-    let ship: ShipyardShip = shipData;
+    let ship: IShipyardShip = shipData;
 
     let moduleMap: Map<ShipModuleSymbol, number> = new Map<ShipModuleSymbol, number>();
     let mountMap: Map<ShipMountSymbol, number> = new Map<ShipMountSymbol, number>();

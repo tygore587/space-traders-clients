@@ -1,15 +1,14 @@
-import { Interface } from "readline"
-import { ShipEngine, ShipFrame, ShipModule, ShipMount, ShipReactor } from "./Ship"
+import { IShipEngine, IShipFrame, IShip, IShipModule, IShipMount, IShipReactor } from "./Ship"
 import { Agent } from "./Agent"
 
-export interface Shipyard {
+export interface IShipyard {
     symbol: string
-    shipTypes: ShipType[]
-    transactions: Transaction[]
-    ships: ShipyardShip[]
+    shipTypes: IShipType[]
+    transactions: ITransaction[]
+    ships: IShipyardShip[]
   }
   
-export interface ShipType {
+export interface IShipType {
   type: ShipTypeEnum
 }
 
@@ -26,7 +25,7 @@ export interface ShipType {
     "SHIP_REFINING_FREIGHTER"
   }
   
-  export interface Transaction {
+  export interface ITransaction {
     waypointSymbol: string
     shipSymbol: string
     price: number
@@ -34,20 +33,20 @@ export interface ShipType {
     timestamp: Date
   }
 
-  export interface ShipyardShip {
+  export interface IShipyardShip {
     type: ShipTypeEnum
     name: string
     description: string
     purchasePrice: number
-    frame: ShipFrame
-    reactor: ShipReactor
-    engine: ShipEngine
-    modules: ShipModule[]
-    mounts: ShipMount[]
+    frame: IShipFrame
+    reactor: IShipReactor
+    engine: IShipEngine
+    modules: IShipModule[]
+    mounts: IShipMount[]
   }
   
 export interface IShipPurchase {
   agent: Agent
-  ship: ShipyardShip
-  transaction: Transaction
+  ship: IShip
+  transaction: ITransaction
 }

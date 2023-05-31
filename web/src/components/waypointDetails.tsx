@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { Waypoint } from "@/models/Waypoint";
-import { Market } from "@/models/Market";
+import { IWaypoint } from "@/models/Waypoint";
+import { IMarket } from "@/models/Market";
 import { MarketDetails } from "./marketDetails";
-import { Shipyard } from "@/models/Shipyard";
+import { IShipyard } from "@/models/Shipyard";
 import { ShipyardDetails } from "./shipyardDetails";
 import { Agent } from "@/models/Agent";
-import { ShipModel } from "@/models/Ship";
+import { IShip } from "@/models/Ship";
 
 const hrClass: string = 'border-orange-500 mx-[0.1em] my-[0.3em]';
 
 interface IWaypointDetails {
     agent?: Agent
-    shiplist: ShipModel[]
+    shiplist: IShip[]
     waypointData: any
     marketData: any
     shipyardData: any
@@ -25,9 +25,9 @@ export const WaypointDetails = ({agent, shiplist, waypointData, marketData, ship
     const [showShipyardDetails,setShowShipyardDetails] = useState<boolean>(false);
     const [showDetails, setShowDetails] = useState<boolean>(false);
 
-    let waypoint: Waypoint = waypointData;
-    let market: Market = marketData;
-    let shipyard: Shipyard = shipyardData;
+    let waypoint: IWaypoint = waypointData;
+    let market: IMarket = marketData;
+    let shipyard: IShipyard = shipyardData;
 
     let shortMarketSymbol: string = "\u2696";
     let shortShipyardSymbol: string = "\u2693";

@@ -1,13 +1,13 @@
-export interface Market {
+export interface IMarket {
     symbol: string
-    exports: TradeGood[]
-    imports: TradeGood[]
-    exchange: TradeGood[]
-    transactions: MarketTransaction[]
-    tradeGoods: MarketTradeGood[]
+    exports: ITradeGood[]
+    imports: ITradeGood[]
+    exchange: ITradeGood[]
+    transactions: IMarketTransaction[]
+    tradeGoods: IMarketTradeGood[]
   }
   
-  export interface TradeGood {
+  export interface ITradeGood {
     symbol: TradeGoodSymbol
     name: string
     description: string
@@ -126,7 +126,7 @@ export interface Market {
     "MOUNT_TURRET_I"
   }
   
-  export interface MarketTransaction {
+  export interface IMarketTransaction {
     waypointSymbol: string
     shipSymbol: string
     tradeSymbol: string
@@ -142,7 +142,7 @@ export interface Market {
     "SELL"
   }
   
-  export interface MarketTradeGood {
+  export interface IMarketTradeGood {
     symbol: string
     tradeVolume: number
     supply: Supply

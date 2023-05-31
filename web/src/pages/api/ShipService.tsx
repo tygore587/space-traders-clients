@@ -1,4 +1,4 @@
-import { ShipModel } from "@/models/Ship"
+import { IShip } from "@/models/Ship"
 import { IShipPurchase, ShipTypeEnum } from "@/models/Shipyard";
 
 export async function GetShipListAsync(page: number = 1, limit: number = 20)
@@ -26,7 +26,7 @@ export async function GetShipListAsync(page: number = 1, limit: number = 20)
 
         let result = await response.json();
 
-        let data: ShipModel[] = result.data;
+        let data: IShip[] = result.data;
         
         return data;
 

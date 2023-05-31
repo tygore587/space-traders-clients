@@ -4,7 +4,7 @@ export interface IContract {
     id: string
     factionSymbol: string
     type: ContractType
-    terms: ContractTerm
+    terms: IContractTerm
     accepted: boolean
     fulfilled: boolean
     expiration: Date
@@ -17,25 +17,25 @@ export enum ContractType {
     "SHUTTLE"
 }
   
-export interface ContractTerm {
+export interface IContractTerm {
     deadline: string
-    payment: Payment
-    deliver: Deliver[]
+    payment: IPayment
+    deliver: IDeliver[]
   }
   
-  export interface Payment {
+  export interface IPayment {
     onAccepted: number
     onFulfilled: number
   }
   
-  export interface Deliver {
+  export interface IDeliver {
     tradeSymbol: string
     destinationSymbol: string
     unitsRequired: number
     unitsFulfilled: number
   }
 
-  export interface ContractDeliverGood {
+  export interface IContractDeliverGood {
     tradeSymbol: string
     destinationSymbol: string
     unitsRequired: number

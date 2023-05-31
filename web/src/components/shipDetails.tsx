@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ShipModel, ShipModuleSymbol, ShipMountSymbol } from "@/models/Ship";
+import { IShip, ShipModuleSymbol, ShipMountSymbol } from "@/models/Ship";
 import { ShipActionPanel } from "./shipActionPanel";
 
 interface ISimpleModule {
@@ -14,7 +14,7 @@ interface ISimpleMount {
 
 export const ShipDetails = ({shipData}:any) =>
 {
-    let ship: ShipModel = shipData;
+    let ship: IShip = shipData;
 
     let moduleMap: Map<ShipModuleSymbol, number> = new Map<ShipModuleSymbol, number>();
     let mountMap: Map<ShipMountSymbol, number> = new Map<ShipMountSymbol, number>();

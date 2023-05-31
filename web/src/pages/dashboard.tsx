@@ -7,7 +7,7 @@ import { SystemMap } from "@/components/system";
 import { FactionList } from "@/components/factionList";
 import { Footer } from "@/components/footer";
 import { GetShipListAsync } from "./api/ShipService";
-import { ShipModel } from "@/models/Ship";
+import { IShip } from "@/models/Ship";
 import { Agent } from "@/models/Agent";
 import { GetAgentAsync } from "./api/AgentService";
 import { ContractList } from "@/components/contractList";
@@ -15,7 +15,7 @@ import { ContractList } from "@/components/contractList";
 export default function Dashboard() 
 {
     const [agent, setAgent] = useState<Agent>();
-    const [ships, setShips] = useState<ShipModel[]>();
+    const [ships, setShips] = useState<IShip[]>();
 
     const [visability, setVisablity] = useState<number>(0);
     const [system, setSystem] = useState<string>(agent?.headquarters.split("-")[1] ?? "");
@@ -25,7 +25,7 @@ export default function Dashboard()
         setVisablity(visabilityState);
     }
 
-    function SetGlobalData(agent?: Agent, ship?: ShipModel){
+    function SetGlobalData(agent?: Agent, ship?: IShip){
 
         if (agent)
         {
@@ -34,7 +34,7 @@ export default function Dashboard()
 
         if (ship)
         {
-            let shiplist: ShipModel[] = ships ?? [];
+            let shiplist: IShip[] = ships ?? [];
 
             if (shiplist.findIndex((s) => s.symbol === ship.symbol) >= 0)
             {
@@ -67,7 +67,7 @@ export default function Dashboard()
     {
         const response: any = await GetShipListAsync();
 
-        let data: ShipModel[] = response;
+        let data: IShip[] = response;
 
         setShips(data);
     };
