@@ -8,5 +8,5 @@ export interface ISavedMarketData {
 
 export interface ISavedShipyardData {
     lastUpdate: Date
-    marketData: IShipyard
+    shipyardData: IShipyard
 }

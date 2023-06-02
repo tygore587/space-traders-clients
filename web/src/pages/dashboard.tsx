@@ -11,11 +11,15 @@ import { IShip } from "@/models/Ship";
 import { Agent } from "@/models/Agent";
 import { GetAgentAsync } from "./api/AgentService";
 import { ContractList } from "@/components/contractList";
+import { DataProvider, useAgent, useShip } from "@/data/commonContext";
 
 export default function Dashboard() 
 {
     const [agent, setAgent] = useState<Agent>();
     const [ships, setShips] = useState<IShip[]>();
+
+    const {agentState, agentDispatch} = useAgent();
+    const {shipState, shipDispatch} = useShip();
 
     const [visability, setVisablity] = useState<number>(0);
     const [system, setSystem] = useState<string>(agent?.headquarters.split("-")[1] ?? "");
@@ -59,6 +63,7 @@ export default function Dashboard()
     {
         let data: Agent = await GetAgentAsync();
         
+        agentDispatch(data);
         setAgent(data);
         setSystem(data.headquarters.split("-")[1]);
     };
@@ -69,6 +74,7 @@ export default function Dashboard()
 
         let data: IShip[] = response;
 
+        shipDispatch(data);
         setShips(data);
     };
 
@@ -79,18 +85,20 @@ export default function Dashboard()
     }, []);
 
     return (
-        <div className="grid grid-cols-[10%_90%] grid-rows-[6%_90%_4%] h-screen">
-            <div className="col-start-1 col-span-2 row-start-1"><Header agent={agent}/></div>
-            <div className="col-start-1 row-start-2"><SideNav handleCallback={SetComponentVisabilty}/></div>
-            <div className="col-start-2 row-start-2">
-                {visability === 0 && <UniverseMap callback={SetSystem}/>}
-                {visability === 1 && <SystemMap agent={agent} shiplist={ships} presetSystemSymbol={system} globalDataFunction={SetGlobalData}/>}
-                {visability === 2 && <ShipList shiplist={ships}/>}
-                {visability === 3 && <ContractList globalDataFunction={SetGlobalData}/>}
-                {visability === 4 && <FactionList/>}
+        <DataProvider agentInit={agent??new Agent} shipInit={ships??[]} contractInit={[]} factionInit={[]} universeInit={[]}>
+            <div className="grid grid-cols-[10%_90%] grid-rows-[6%_90%_4%] h-screen">
+                <div className="col-start-1 col-span-2 row-start-1"><Header agent={agent}/></div>
+                <div className="col-start-1 row-start-2"><SideNav handleCallback={SetComponentVisabilty}/></div>
+                <div className="col-start-2 row-start-2">
+                    {visability === 0 && <UniverseMap callback={SetSystem}/>}
+                    {visability === 1 && <SystemMap agent={agent} shiplist={ships} presetSystemSymbol={system} globalDataFunction={SetGlobalData}/>}
+                    {visability === 2 && <ShipList shiplist={ships}/>}
+                    {visability === 3 && <ContractList globalDataFunction={SetGlobalData}/>}
+                    {visability === 4 && <FactionList/>}
+                </div>
+                <div className="col-start-1 col-span-2 row-start-3"><Footer agent={agent}/></div>
             </div>
-            <div className="col-start-1 col-span-2 row-start-3"><Footer agent={agent}/></div>
-        </div>
+        </DataProvider>
     )
 }
   

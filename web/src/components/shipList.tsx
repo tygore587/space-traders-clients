@@ -1,11 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {Ship} from "@/components/ship";
 import { IShip } from "@/models/Ship";
 import { ShipDetails } from "./shipDetails";
+import { useShip } from "@/data/commonContext";
 
 
 export const ShipList = ({shiplist}:any) =>
 {
+
+    const {shipState, shipDispatch} = useShip();
+
+    console.log(shipState)
+    
     const [ships] = useState<IShip[]>(shiplist);
     const [selectedShip, setSelectedShip] = useState<IShip>(shiplist[0]);
 
