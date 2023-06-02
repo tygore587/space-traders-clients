@@ -33,7 +33,7 @@ interface IDataProvider {
 }
 
 function agentReducer(state: Agent, action: any): Agent {
-    return action.agent;
+  return action.agent;
 }
 
 function shipReducer(state: IShip[], action: any): IShip[] {
