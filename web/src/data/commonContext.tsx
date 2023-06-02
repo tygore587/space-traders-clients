@@ -43,8 +43,9 @@ function shipReducer(state: IShip[], action: any): IShip[] {
         case "remove":
             state.splice(state.findIndex((s) => s.symbol === action.ship.symbol), 1);
           return state;
-        case "set":
-          return state[state.findIndex((s) => s.symbol === action.ship.symbol)] = action.ship;
+        case "update":
+          let shipIndex = state.findIndex((s) => s.symbol === action.ship.symbol);
+          return (shipIndex >= 0 ? state[shipIndex] = action.ship : state.concat(action.ship));
         default:
           return state;
       }
@@ -57,7 +58,7 @@ function contractReducer(state: IContract[], action: any): IContract[] {
         case "remove":
             state.splice(state.findIndex((s) => s.id === action.contract.id), 1);
           return state;
-        case "set":
+        case "update":
           return state[state.findIndex((s) => s.id === action.contract.id)] = action.contract;
         default:
           return state;
@@ -71,7 +72,7 @@ function factionReducer(state: IFaction[], action: any): IFaction[] {
         case "remove":
             state.splice(state.findIndex((s) => s.symbol === action.faction.symbol), 1);
           return state;
-        case "set":
+        case "update":
           return state[state.findIndex((s) => s.symbol === action.faction.symbol)] = action.faction;
         default:
           return state;
@@ -85,7 +86,7 @@ function universeReducer(state: ISystem[], action: any): ISystem[] {
         case "remove":
             state.splice(state.findIndex((s) => s.symbol === action.system.symbol), 1);
           return state;
-        case "set":
+        case "update":
           return state[state.findIndex((s) => s.symbol === action.system.symbol)] = action.system;
         default:
           return state;
@@ -99,7 +100,7 @@ function marketDataReducer(state: ISavedMarketData[], action: any): ISavedMarket
         case "remove":
             state.splice(state.findIndex((s) => s.marketData.symbol === action.market.symbol), 1);
           return state;
-        case "set":
+        case "update":
           return state[state.findIndex((s) => s.marketData.symbol === action.market.symbol)] = action.market;
         default:
           return state;
@@ -113,7 +114,7 @@ function shipyardDataReducer(state: ISavedShipyardData[], action: any): ISavedSh
         case "remove":
             state.splice(state.findIndex((s) => s.shipyardData.symbol === action.shipyard.symbol), 1);
           return state;
-        case "set":
+        case "update":
           return state[state.findIndex((s) => s.shipyardData.symbol === action.shipyard.symbol)] = action.shipyard;
         default:
           return state;

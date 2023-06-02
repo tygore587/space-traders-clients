@@ -31,26 +31,15 @@ export default function Dashboard()
 
     function SetGlobalData(agent?: Agent, ship?: IShip){
 
-        /*if (agent)
+        if (agent)
         {
-            //setAgent(agent);
+            agentDispatch({agent: agent});
         }
 
         if (ship)
-        {
-            let shiplist: IShip[] = ships ?? [];
-
-            if (shiplist.findIndex((s) => s.symbol === ship.symbol) >= 0)
-            {
-                shiplist[shiplist.findIndex((s) => s.symbol === ship.symbol)] = ship;
-            }
-            else
-            {
-                shiplist.push(ship);
-            }
-            
-            setShips(shiplist);
-        }*/
+        {          
+            shipDispatch({type: "update", ship: ship});
+        }
     }
 
     function SetSystem(system: string)

@@ -1,10 +1,10 @@
-import { useAgent } from "@/data/commonContext";
-import { Agent } from "@/models/Agent";
 import React from "react";
+import { useAgent } from "@/data/commonContext";
+
 
 export const Footer = () => 
 {
-    const {agentState, agentDispatch} = useAgent();
+    const {agentState} = useAgent();
 
 
     return (
