@@ -1,9 +1,7 @@
 import { IContract, IContractAccepted } from "@/models/Contract";
 
-export async function GetContractsAsync(page: number = 1, limit: number = 20)
+export async function GetContractsAsync(token: string, page: number = 1, limit: number = 20)
 {
-    let token: string = localStorage.getItem('token') ?? "";
-
     if (token === "")
     {
         return null;
@@ -34,10 +32,8 @@ export async function GetContractsAsync(page: number = 1, limit: number = 20)
     }
 }
 
-export async function AcceptContractAsync(contractId: string)
+export async function AcceptContractAsync(token: string, contractId: string)
 {
-    let token: string = localStorage.getItem('token') ?? "";
-
     if (token === "")
     {
         return null;

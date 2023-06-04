@@ -75,10 +75,8 @@ export async function GetWaypointsAsync(systemSymbol: string, page: number = 1, 
     }
 }
 
-export async function GetMarketAsync(systemSymbol: string, waypointSymbol: string) 
+export async function GetMarketAsync(token: string, systemSymbol: string, waypointSymbol: string) 
 {
-    let token: string = localStorage.getItem('token') ?? "";
-
     if (token === "")
     {
         return null;
@@ -108,10 +106,8 @@ export async function GetMarketAsync(systemSymbol: string, waypointSymbol: strin
     }
 }
 
-export async function GetShipyardAsync(systemSymbol: string, waypointSymbol: string) 
+export async function GetShipyardAsync(token: string, systemSymbol: string, waypointSymbol: string) 
 {
-    let token: string = localStorage.getItem('token') ?? "";
-
     if (token === "")
     {
         return null;

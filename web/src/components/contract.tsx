@@ -1,3 +1,4 @@
+import { useToken } from "@/data/commonContext";
 import { IContract } from "@/models/Contract";
 import { AcceptContractAsync } from "@/pages/api/ContractService";
 import { useState } from "react";
@@ -13,6 +14,7 @@ const buttonClass: string = 'bg-slate-700 mt-[0.25em] px-[0.4em] pt-[0.1em] pb-[
 
 export const Contract = ({contractData, globalDataFunction}:IContractData) =>
 {
+    const {token} = useToken();
     const [showTraits, setShowTraits] = useState<boolean>(false);
     const [contract, setContract] = useState<IContract>(contractData);
 
@@ -23,7 +25,7 @@ export const Contract = ({contractData, globalDataFunction}:IContractData) =>
             return;
         }
 
-        const response: any = await AcceptContractAsync(contractId);
+        const response: any = await AcceptContractAsync(token, contractId);
 
         globalDataFunction(response.agent);
 

@@ -4,6 +4,7 @@ import { ShipyardShipDetails } from "./shipyardShipDetails";
 import { Agent } from "@/models/Agent";
 import { IShip } from "@/models/Ship";
 import { PurchaseShipAsync } from "@/pages/api/ShipService";
+import { useToken } from "@/data/commonContext";
 
 const buttonClass: string = 'bg-slate-700 mt-[0.25em] px-[0.4em] pt-[0.1em] pb-[0.2em] border-[0.2em] border-solid rounded-lg border-sky-700 enabled:hover:bg-slate-600';
 
@@ -17,33 +18,8 @@ interface IShipyardData {
 
 export const ShipyardDetails = ({agent, shiplist, shipyardData, globalDataFunction}: IShipyardData) =>
 {
+    const {token} = useToken();
     let shipyard: IShipyard = shipyardData;
-
-    const GetPurchasedShip = async (shipType: ShipTypeEnum, waypointSymbol: string) => 
-    {
-        if (!waypointSymbol || !shipType)
-        {
-            return;
-        }
-
-        const response: any = await PurchaseShipAsync(shipType, waypointSymbol);
-
-        if (!response)
-        {
-            alert("Error on Shippurchase.");
-        }
-        else
-        {
-            globalDataFunction(response.agent, response.ship);
-        }
-    };
-
-    const PurchaseShip = (event: any) => 
-    {
-        let type: ShipTypeEnum = event.target.id;
-
-        GetPurchasedShip(type, shipyard.symbol);
-    }
 
     return (
         <div id="shipyardDetailsId" className="flex flex-col flex-1 justify-start gap-x-[0.5em] overflow-y-auto pb-[1em] pl-[1em]">
@@ -52,7 +28,6 @@ export const ShipyardDetails = ({agent, shiplist, shipyardData, globalDataFuncti
                 {shipyard?.shipTypes.map((ship) =>
                     <div key={ship.type + "_type"} className="flex flex-row justify-between">
                         <p>{ship.type}</p>
-                        <button id={ship.type.toString()} className={buttonClass} onClick={PurchaseShip}>purchase Ship</button>
                     </div>
                 )}
             </div>}

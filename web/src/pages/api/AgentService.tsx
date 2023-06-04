@@ -1,3 +1,4 @@
+import { useToken } from "@/data/commonContext";
 import { Agent } from "../../models/Agent"
 
 interface IRegisterData
@@ -59,10 +60,8 @@ export async function RegisterNewAgent(callname: string, faction:string, email: 
     }
 }
 
-export async function GetAgentAsync()
+export async function GetAgentAsync(token: string)
 {
-    let token: string = localStorage.getItem('token') ?? "";
-
     if (token === "")
     {
         let data: Agent = new Agent();

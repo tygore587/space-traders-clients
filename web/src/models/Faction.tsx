@@ -5,6 +5,7 @@ export interface IFaction
     description: string
     headquarters: string
     traits: IFactionTrait[]
+    isRecruiting: boolean
 }
 
 interface IFactionTrait 

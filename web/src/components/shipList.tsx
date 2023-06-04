@@ -5,15 +5,13 @@ import { ShipDetails } from "./shipDetails";
 import { useShip } from "@/data/commonContext";
 
 
-export const ShipList = ({shiplist}:any) =>
+export const ShipList = () =>
 {
 
-    const {shipState, shipDispatch} = useShip();
-
-    console.log(shipState)
+    const {ships} = useShip();
     
-    const [ships] = useState<IShip[]>(shiplist);
-    const [selectedShip, setSelectedShip] = useState<IShip>(shiplist[0]);
+    //const [shipList] = useState<IShip[]>(ships);
+    const [selectedShip, setSelectedShip] = useState<IShip>(ships[0]);
 
     function SelectShip(ship: IShip)
     {
@@ -24,7 +22,7 @@ export const ShipList = ({shiplist}:any) =>
         <div className="flex flex-row grow justify-between pt-[0.5em] px-[0.5em] h-full w-full bg-slate-900">
             <div className="flex flex-col gap-[1em] w-max overflow-y-auto ">
                 {ships?.map((ship) => (
-                    <Ship key={ship.symbol} shipData={ship} active={selectedShip.symbol === ship.symbol} callback={SelectShip}/>
+                    <Ship key={ship.symbol} shipData={ship} active={selectedShip?.symbol === ship?.symbol} callback={SelectShip}/>
                 ))}
             </div>
             {selectedShip && <ShipDetails shipData={selectedShip}/>}

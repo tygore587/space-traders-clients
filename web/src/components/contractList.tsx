@@ -3,6 +3,7 @@ import { IContract } from "@/models/Contract";
 import { GetContractsAsync } from "@/pages/api/ContractService";
 import { Contract } from "./contract";
 import { Agent } from "@/models/Agent";
+import { useToken } from "@/data/commonContext";
 
 interface IAgent {
     globalDataFunction?: any
@@ -10,11 +11,12 @@ interface IAgent {
 
 export const ContractList = ({globalDataFunction}:IAgent) =>
 {
+    const {token} = useToken();
     const [contracts, setContracts] = useState<IContract[]>();
 
     const fetchFactions= async () => 
     {
-        const response: any = await GetContractsAsync();
+        const response: any = await GetContractsAsync(token);
 
         let data: IContract[] = response;
 

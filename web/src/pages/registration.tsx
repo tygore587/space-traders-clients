@@ -3,12 +3,36 @@ import { useRouter } from 'next/router'
 import { Button } from '@/components/button';
 import { FactionList } from '@/components/factionList';
 import { RegisterNewAgent } from './api/AgentService';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useFaction, useToken } from '@/data/commonContext';
+import { GetFactionListAsync } from './api/FactionService';
+import { IFaction } from '@/models/Faction';
 
 export default function Registration() 
 {
+    const {tokenDispatch} = useToken();
+    const {factions, factionDispatch} = useFaction();
+
     const router = useRouter()
     const { routerMsg } = router.query
+
+
+    const fetchFactions= async () => 
+    {
+        const response: any = await GetFactionListAsync();
+
+        let data: IFaction[] = response;
+
+        factionDispatch({type: "add", faction: data});
+    };
+
+    useEffect(() => 
+    {
+        if (factions.length === 0){
+            fetchFactions();
+        }
+    }, []);
+
 
     const [msg, setMsg] = useState<string>("");
 
@@ -21,7 +45,8 @@ export default function Registration()
 
         if( response.status)
         {
-            localStorage.setItem('token', response.value);
+            //localStorage.setItem('token', response.value);
+            tokenDispatch({token: response.value});
 
             alert("Save the following Token as it's the Login for your Agent: \r\n\r\n" + response.value);
 
@@ -31,9 +56,6 @@ export default function Registration()
         {
             setMsg(response.value);
         }
-
-
-        
     };
 
     return (
@@ -44,10 +66,11 @@ export default function Registration()
                 <div>
                     <form onSubmit={register}>
                         <input name="callname" id="callname" type="text" placeholder='CALLNAME' required minLength={3} maxLength={14}></input><br/>
-                        <input className='mt-[0.25em]' name="faction" id="faction" type="text" placeholder='Faction' required></input><br/>
-                        {/*<select name="faction" id="faction" required>
-
-    </select><br/>*/}
+                        <select name="faction" id="faction" className="font-bold text-slate-800" required>
+                            {factions?.map((faction) => 
+                                <option key={faction.symbol} className={faction.isRecruiting ? "text-green-700" : "text-red-700"} value={faction.symbol}>{faction.name}</option>
+                            )}
+                        </select><br/>
                         <Button text="register User" type="Submit" value="Register"/>
                     </form>
                 </div>

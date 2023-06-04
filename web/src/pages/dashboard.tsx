@@ -11,18 +11,16 @@ import { IShip } from "@/models/Ship";
 import { Agent } from "@/models/Agent";
 import { GetAgentAsync } from "./api/AgentService";
 import { ContractList } from "@/components/contractList";
-import { DataProvider, useAgent, useShip } from "@/data/commonContext";
+import { useAgent, useShip, useToken } from "@/data/commonContext";
 
 export default function Dashboard() 
 {
-    //const [agent, setAgent] = useState<Agent>();
-    //const [ships, setShips] = useState<IShip[]>();
-
-    const {agentState, agentDispatch} = useAgent();
-    const {shipState, shipDispatch} = useShip();
+    const {token} = useToken();
+    const {agent, agentDispatch} = useAgent();
+    const {ships, shipDispatch} = useShip();
 
     const [visability, setVisablity] = useState<number>(0);
-    const [system, setSystem] = useState<string>(agentState?.headquarters.split("-")[1] ?? "");
+    const [system, setSystem] = useState<string>(agent?.headquarters.split("-")[1] ?? "");
 
     function SetComponentVisabilty(visabilityState: number)
     {
@@ -50,7 +48,7 @@ export default function Dashboard()
 
     const fetchAgent= async () => 
     {
-        let data: Agent = await GetAgentAsync();
+        let data: Agent = await GetAgentAsync(token);
 
         agentDispatch({agent: data});
 
@@ -59,7 +57,7 @@ export default function Dashboard()
 
     const fetchShips = async () => 
     {
-        const response: any = await GetShipListAsync();
+        const response: any = await GetShipListAsync(token);
 
         let data: IShip[] = response;
 
@@ -78,8 +76,8 @@ export default function Dashboard()
                 <div className="col-start-1 row-start-2"><SideNav handleCallback={SetComponentVisabilty}/></div>
                 <div className="col-start-2 row-start-2">
                     {visability === 0 && <UniverseMap callback={SetSystem}/>}
-                    {visability === 1 && <SystemMap agent={agentState} shiplist={shipState} presetSystemSymbol={system} globalDataFunction={SetGlobalData}/>}
-                    {visability === 2 && <ShipList shiplist={shipState}/>}
+                    {visability === 1 && <SystemMap agent={agent} shiplist={ships} presetSystemSymbol={system} globalDataFunction={SetGlobalData}/>}
+                    {visability === 2 && <ShipList/>}
                     {visability === 3 && <ContractList globalDataFunction={SetGlobalData}/>}
                     {visability === 4 && <FactionList/>}
                 </div>

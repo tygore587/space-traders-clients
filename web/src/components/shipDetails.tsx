@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { IShip, ShipModuleSymbol, ShipMountSymbol } from "@/models/Ship";
+import { IShip, IShipNav, ShipModuleSymbol, ShipMountSymbol } from "@/models/Ship";
 import { ShipActionPanel } from "./shipActionPanel";
+import { shortCargoSymbol, shortEnergySymbol, shortFuelSymbol } from "@/data/commonData";
+import { ShipNavFlightMode } from "@/models/Ship";
+import { PatchFlightMode } from "@/pages/api/ShipService";
+import { useShip, useToken } from "@/data/commonContext";
 
 interface ISimpleModule {
     symbol: ShipModuleSymbol
@@ -14,6 +18,8 @@ interface ISimpleMount {
 
 export const ShipDetails = ({shipData}:any) =>
 {
+    const {token} = useToken();
+
     let ship: IShip = shipData;
 
     let moduleMap: Map<ShipModuleSymbol, number> = new Map<ShipModuleSymbol, number>();
@@ -61,6 +67,26 @@ export const ShipDetails = ({shipData}:any) =>
 
     let counter: number = 0;
 
+    const patchShipNav = async (shipSymbol: string, flightMode: string) => 
+    {
+        const response: any = await PatchFlightMode(token, shipSymbol, flightMode);
+
+        if (response === null){
+            return;
+        }
+
+        let shipNav: IShipNav = response;
+
+        ship.nav = shipNav;
+    };
+
+    function SetFlightMode(event: any)
+    {
+        let flightMode: string = event.target.value;
+
+        patchShipNav(ship.symbol, flightMode);
+    }
+
     return (
         <div className="flex flex-col justify-start gap-[1em] w-[35em]">
             <ShipActionPanel shipData={ship} callback={null}/>
@@ -75,13 +101,19 @@ export const ShipDetails = ({shipData}:any) =>
                 <p className="text-orange-500 font-bold">{ship?.symbol} ({ship?.registration.role} {ship?.frame.name.replace("Frame ", "")})</p>
                 <p className="text-orange-500 font-bold text-xs">{ship?.frame.description}</p>
                 <hr className="border-orange-500 mx-[0.1em] my-[0.3em]"/>
-                <p><i>-{ship?.nav.status}-</i> {ship?.nav.route.destination.symbol}</p>
-                <p>Fuel: {ship?.fuel.current} / {ship?.fuel.capacity}</p>
+                <p><i className="font-bold">-{ship?.nav.status}-</i> {ship?.nav.route.destination.symbol}</p>
+                <select className="bg-slate-800 w-fit" value={ship.nav.flightMode} onChange={SetFlightMode}>
+                    <option value={ShipNavFlightMode[ShipNavFlightMode.BURN]}>{ShipNavFlightMode[ShipNavFlightMode.BURN]}</option>
+                    <option value={ShipNavFlightMode[ShipNavFlightMode.CRUISE]}>{ShipNavFlightMode[ShipNavFlightMode.CRUISE]}</option>
+                    <option value={ShipNavFlightMode[ShipNavFlightMode.DRIFT]}>{ShipNavFlightMode[ShipNavFlightMode.DRIFT]}</option>
+                    <option value={ShipNavFlightMode[ShipNavFlightMode.STEALTH]}>{ShipNavFlightMode[ShipNavFlightMode.STEALTH]}</option>
+                </select>
+                <p>{shortFuelSymbol} {ship?.fuel.current} / {ship?.fuel.capacity}</p>
                 <hr className="border-orange-500 mx-[0.1em] my-[0.3em]"/>
                 <div className="grid grid-cols-2 gap-x-[0.5em]">
                     <div className="px-[0.3em] py-[0.2em] border border-none rounded-lg hover:outline-[0.1em] hover:outline-solid hover:outline-offset-0 hover:outline hover:outline-sky-500">
                         <p className="text-orange-500 font-bold">{ship?.reactor.name} <i>({ship?.reactor.condition}%)</i></p>
-                        <p>Usage: {powerConsumption} / {ship?.reactor.powerOutput}</p>
+                        <p>{shortEnergySymbol} {powerConsumption} / {ship?.reactor.powerOutput}</p>
                     </div>
                     <div className="px-[0.3em] py-[0.2em] border border-none rounded-lg hover:outline-[0.1em] hover:outline-solid hover:outline-offset-0 hover:outline hover:outline-sky-500">
                         <p className="text-orange-500 font-bold">{ship?.engine.name} <i>({ship?.engine.condition}%)</i></p>
@@ -114,7 +146,7 @@ export const ShipDetails = ({shipData}:any) =>
                     </div>
                 </div>
                 <hr className="border-orange-500 mx-[0.1em] my-[0.3em]"/>
-                <p className="text-orange-500 font-bold">Cargo: {ship?.cargo.units} / {ship?.cargo.capacity}</p>
+                <p className="text-orange-500 font-bold">{shortCargoSymbol} {ship?.cargo.units} / {ship?.cargo.capacity}</p>
                 <ul className="list-disc list-inside pl-[0.2em] flex flex-col gap-2 marker:text-orange-500">
                     {ship?.cargo.inventory.map((cargoItem) => 
                         <li key={cargoItem.symbol}>{cargoItem.name} - {cargoItem.units}</li>

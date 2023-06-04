@@ -1,10 +1,8 @@
-import { IShip } from "@/models/Ship"
+import { IShip, IShipNav } from "@/models/Ship"
 import { IShipPurchase, ShipTypeEnum } from "@/models/Shipyard";
 
-export async function GetShipListAsync(page: number = 1, limit: number = 20)
+export async function GetShipListAsync(token: string, page: number = 1, limit: number = 20)
 {
-    let token: string = localStorage.getItem('token') ?? "";
-
     if (token === "")
     {
         return null;
@@ -35,10 +33,46 @@ export async function GetShipListAsync(page: number = 1, limit: number = 20)
     }
 }
 
-export async function PurchaseShipAsync(shipType: ShipTypeEnum, waypointSymbol: string)
+export async function PatchFlightMode(token: string, shipSymbol: string, flightMode: string)
 {
-    let token: string = localStorage.getItem('token') ?? "";
+    if (token === "" || shipSymbol === "" || flightMode === "")
+    {
+        return null;
+    }
 
+    const url = 'https://api.spacetraders.io/v2/my/ships/'+shipSymbol+'/nav';
+	const options = {
+		method: 'PATCH',
+		headers: {
+            'Content-Type': 'application/json',
+		    Accept: 'application/json',
+            Authorization: 'Bearer ' + token
+		},
+        body: '{"flightMode":"' + flightMode + '"}'
+	};
+
+    try {
+
+        let response: Response = await fetch(url, options);
+
+        if (!response.ok)
+        {
+            return null;
+        }
+
+        let result = await response.json();
+
+        let data: IShipNav = result.data;
+        
+        return data;
+
+    } catch (error) {
+        return null;
+    }
+}
+
+export async function PurchaseShipAsync(token: string, shipType: ShipTypeEnum, waypointSymbol: string)
+{
     if (token === "")
     {
         return null;

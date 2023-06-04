@@ -4,17 +4,19 @@ import { IContract } from '@/models/Contract';
 import { IFaction } from '@/models/Faction';
 import { IShip } from '@/models/Ship';
 import { ISystem } from '@/models/System';
-import { createContext, useContext, useReducer } from 'react';
+import { Dispatch, createContext, useContext, useReducer } from 'react';
 
 
-export const AgentContext = createContext<any>(null);
-export const ShipContext = createContext<any>(null);
+export const TokenContext = createContext<{token: string, tokenDispatch: Dispatch<any>}>({token: "", tokenDispatch: () => null})
+export const AgentContext = createContext<{agent: Agent, agentDispatch: Dispatch<any>}>({agent: null!, agentDispatch: () => null});
+export const ShipContext = createContext<{ships: IShip[], shipDispatch: Dispatch<any>}>({ships: [], shipDispatch: () => null});
 export const ContractContext = createContext<any>(null);
-export const FactionContext = createContext<any>(null);
+export const FactionContext = createContext<{factions: IFaction[], factionDispatch: Dispatch<any>}>({factions: [], factionDispatch: () => null});
 export const UniverseContext = createContext<any>(null);
-export const MarketContext = createContext<any>(null);
-export const ShipyardContext = createContext<any>(null);
+export const MarketContext = createContext<{marketData: Map<string, ISavedMarketData>, marketDataDispatch: Dispatch<any>}>({marketData: new Map<string, ISavedMarketData>(), marketDataDispatch: () => null});
+export const ShipyardContext = createContext<{shipyardData: Map<string, ISavedShipyardData>, shipyardDataDispatch: Dispatch<any>}>({shipyardData: new Map<string, ISavedShipyardData>(), shipyardDataDispatch: () => null});
 
+export const useToken = () => useContext(TokenContext);
 export const useAgent = () => useContext(AgentContext);
 export const useShip = () => useContext(ShipContext);
 export const useContract = () => useContext(ContractContext);
@@ -30,6 +32,10 @@ interface IDataProvider {
     contractInit: IContract[]
     factionInit: IFaction[]
     universeInit: ISystem[]
+}
+
+function tokenReducer(state: string, action: any): string {
+  return action.token;
 }
 
 function agentReducer(state: Agent, action: any): Agent {
@@ -93,59 +99,66 @@ function universeReducer(state: ISystem[], action: any): ISystem[] {
       }
 }
 
-function marketDataReducer(state: ISavedMarketData[], action: any): ISavedMarketData[] {
-    switch (action.type) {
-        case "add":
-          return state.concat(action.market);
-        case "remove":
-            state.splice(state.findIndex((s) => s.marketData.symbol === action.market.symbol), 1);
-          return state;
-        case "update":
-          return state[state.findIndex((s) => s.marketData.symbol === action.market.symbol)] = action.market;
-        default:
-          return state;
+function marketDataReducer(state: Map<string, ISavedMarketData>, action: any): Map<string, ISavedMarketData> {
+  switch (action.type) {
+    case "set":
+      let savedMarketData: ISavedMarketData = {
+        lastUpdate: new Date(),
+        marketData: action.market
       }
+      return state.set(action.market.symbol, savedMarketData);
+    case "remove":
+        state.delete(action.market.symbol);
+      return state;
+    default:
+      return state;
+  }
 }
 
-function shipyardDataReducer(state: ISavedShipyardData[], action: any): ISavedShipyardData[] {
+function shipyardDataReducer(state: Map<string, ISavedShipyardData>, action: any): Map<string, ISavedShipyardData> {
     switch (action.type) {
-        case "add":
-          return state.concat(action.shipyard);
-        case "remove":
-            state.splice(state.findIndex((s) => s.shipyardData.symbol === action.shipyard.symbol), 1);
-          return state;
-        case "update":
-          return state[state.findIndex((s) => s.shipyardData.symbol === action.shipyard.symbol)] = action.shipyard;
-        default:
-          return state;
-      }
+      case "set":
+        let savedShipyardData: ISavedShipyardData = {
+          lastUpdate: new Date(),
+          shipyardData: action.shipyard
+        }
+        return state.set(action.shipyard.symbol, savedShipyardData);
+      case "remove":
+          state.delete(action.shipyard.symbol);
+        return state;
+      default:
+        return state;
+    }
 }
 
 export const DataProvider = ({ children, agentInit, shipInit, contractInit, factionInit, universeInit }:IDataProvider) => {
 
-    const [agentState, agentDispatch] = useReducer(agentReducer, agentInit);
-    const [shipState, shipDispatch] = useReducer(shipReducer, shipInit);
-    const [contractState, contractDispatch] = useReducer(contractReducer, contractInit);
-    const [factionState, factionDispatch] = useReducer(factionReducer, factionInit);
-    const [universeState, universeDispatch] = useReducer(universeReducer, universeInit);
-    const [marketDataState, marketDataDispatch] = useReducer(marketDataReducer, []);
-    const [shipyardDataState, shipyardDataDispatch] = useReducer(shipyardDataReducer, []);
+    const [token, tokenDispatch] = useReducer(tokenReducer, "");
+    const [agent, agentDispatch] = useReducer(agentReducer, agentInit);
+    const [ships, shipDispatch] = useReducer(shipReducer, shipInit);
+    const [contracts, contractDispatch] = useReducer(contractReducer, contractInit);
+    const [factions, factionDispatch] = useReducer(factionReducer, factionInit);
+    const [universe, universeDispatch] = useReducer(universeReducer, universeInit);
+    const [marketData, marketDataDispatch] = useReducer(marketDataReducer, new Map<string, ISavedMarketData>());
+    const [shipyardData, shipyardDataDispatch] = useReducer(shipyardDataReducer, new Map<string, ISavedShipyardData>());
 
     return (
-      <AgentContext.Provider value={{agentState, agentDispatch}}>
-        <ShipContext.Provider value={{shipState, shipDispatch}}>
-            <ContractContext.Provider value={{contractState, contractDispatch}}>
-                <FactionContext.Provider value={{factionState, factionDispatch}}>
-                    <UniverseContext.Provider value={{universeState, universeDispatch}}>
-                        <MarketContext.Provider value={{marketDataState, marketDataDispatch}}>
-                            <ShipyardContext.Provider value={{shipyardDataState, shipyardDataDispatch}}>
-                                {children}
-                            </ShipyardContext.Provider>
-                        </MarketContext.Provider>
-                    </UniverseContext.Provider>
-                </FactionContext.Provider>
+      <TokenContext.Provider value={{token, tokenDispatch}}>
+        <AgentContext.Provider value={{agent, agentDispatch}}>
+          <ShipContext.Provider value={{ships, shipDispatch}}>
+            <ContractContext.Provider value={{contracts, contractDispatch}}>
+              <FactionContext.Provider value={{factions, factionDispatch}}>
+                <UniverseContext.Provider value={{universe, universeDispatch}}>
+                  <MarketContext.Provider value={{marketData, marketDataDispatch}}>
+                    <ShipyardContext.Provider value={{shipyardData, shipyardDataDispatch}}>
+                      {children}
+                    </ShipyardContext.Provider>
+                  </MarketContext.Provider>
+                </UniverseContext.Provider>
+              </FactionContext.Provider>
             </ContractContext.Provider>
-        </ShipContext.Provider>
-      </AgentContext.Provider>
+          </ShipContext.Provider>
+        </AgentContext.Provider>
+      </TokenContext.Provider>
     );
   }

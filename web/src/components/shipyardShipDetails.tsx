@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { IShipyardShip } from "@/models/Shipyard";
 import { ShipModuleSymbol, ShipMountSymbol } from "@/models/Ship";
 import { PurchaseShipAsync } from "@/pages/api/ShipService";
+import { useToken } from "@/data/commonContext";
 
 interface IShipData {
     shiyardWaypointSymbol: string
@@ -23,6 +24,7 @@ const buttonClass: string = 'bg-slate-700 mt-[0.25em] px-[0.4em] pt-[0.1em] pb-[
 
 export const ShipyardShipDetails = ({shiyardWaypointSymbol, shipData, globalDataFunction}:IShipData) =>
 {
+    const {token} = useToken();
     const [showDetails, setShowDetails] = useState<boolean>(false);
 
     let ship: IShipyardShip = shipData;
@@ -73,7 +75,7 @@ export const ShipyardShipDetails = ({shiyardWaypointSymbol, shipData, globalData
             return;
         }
 
-        const response: any = await PurchaseShipAsync(ship.type, waypointSymbol);
+        const response: any = await PurchaseShipAsync(token, ship.type, waypointSymbol);
 
         if (!response)
         {
