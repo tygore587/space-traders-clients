@@ -1,4 +1,5 @@
 import { useToken } from "@/data/commonContext";
+import { shortContractSymbol } from "@/data/commonData";
 import { IContract } from "@/models/Contract";
 import { AcceptContractAsync } from "@/pages/api/ContractService";
 import { useState } from "react";
@@ -49,7 +50,8 @@ export const Contract = ({contractData, globalDataFunction}:IContractData) =>
             h-fit w-fit max-w-lg" 
             onClick={() => setShowTraits(!showTraits)}
         >
-            <p className="text-orange-500 font-bold break-words">{contract.type} - {contract.factionSymbol}</p>
+            {contract.fulfilled && <p className="text-orange-800 font-bold">-- FULFILLED --</p>}
+            <p className="text-orange-500 font-bold break-words">{shortContractSymbol} {contract.type} - {contract.factionSymbol}</p>
             <p className="text-orange-500 font-bold text-xs break-words">{contract.id}</p>
             <p className="text-orange-500 font-bold text-xs break-words">Accept: 
                 {contract?.deadlineToAccept != null ? new Date(contract?.deadlineToAccept?.toString()).toLocaleString("de-DE") :"-" } {contract.accepted ? "\u2714" : "\u2716"}

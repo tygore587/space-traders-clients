@@ -21,6 +21,7 @@ export async function GetStatsAsync()
         return data;
 
     } catch (error) {
+        console.log(error);
         return error;
     }
 }

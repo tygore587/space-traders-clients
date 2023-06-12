@@ -10,9 +10,9 @@ import { Dispatch, createContext, useContext, useReducer } from 'react';
 export const TokenContext = createContext<{token: string, tokenDispatch: Dispatch<any>}>({token: "", tokenDispatch: () => null})
 export const AgentContext = createContext<{agent: Agent, agentDispatch: Dispatch<any>}>({agent: null!, agentDispatch: () => null});
 export const ShipContext = createContext<{ships: IShip[], shipDispatch: Dispatch<any>}>({ships: [], shipDispatch: () => null});
-export const ContractContext = createContext<any>(null);
+export const ContractContext = createContext<{contracts: IContract[], contractDispatch: Dispatch<any>}>({contracts: [], contractDispatch: () => null});
 export const FactionContext = createContext<{factions: IFaction[], factionDispatch: Dispatch<any>}>({factions: [], factionDispatch: () => null});
-export const UniverseContext = createContext<any>(null);
+export const UniverseContext = createContext<{universe: ISystem[], universeDispatch: Dispatch<any>}>({universe: [], universeDispatch: () => null});
 export const MarketContext = createContext<{marketData: Map<string, ISavedMarketData>, marketDataDispatch: Dispatch<any>}>({marketData: new Map<string, ISavedMarketData>(), marketDataDispatch: () => null});
 export const ShipyardContext = createContext<{shipyardData: Map<string, ISavedShipyardData>, shipyardDataDispatch: Dispatch<any>}>({shipyardData: new Map<string, ISavedShipyardData>(), shipyardDataDispatch: () => null});
 
@@ -51,7 +51,13 @@ function shipReducer(state: IShip[], action: any): IShip[] {
           return state;
         case "update":
           let shipIndex = state.findIndex((s) => s.symbol === action.ship.symbol);
-          return (shipIndex >= 0 ? state[shipIndex] = action.ship : state.concat(action.ship));
+
+          if (shipIndex >= 0)
+            state[shipIndex] = action.ship;
+          else
+            state.concat(action.ship);
+
+          return state;
         default:
           return state;
       }
@@ -65,7 +71,14 @@ function contractReducer(state: IContract[], action: any): IContract[] {
             state.splice(state.findIndex((s) => s.id === action.contract.id), 1);
           return state;
         case "update":
-          return state[state.findIndex((s) => s.id === action.contract.id)] = action.contract;
+          let contractIndex: number = state.findIndex((s) => s.id === action.contract.id);
+
+          if (contractIndex >= 0)
+            state[contractIndex] = action.contract;
+          else
+            state.concat(action.contract);
+
+          return state;
         default:
           return state;
       }

@@ -1,38 +1,31 @@
-import React, { useState, useEffect } from "react";
-import { GetSystemsAsJSONAsync } from '../pages/api/SystemService'
-import {ISystem} from "../models/System"
+import React, { useEffect } from "react";
+import { useUniverse } from "@/data/commonContext";
 
 
 export const UniverseMap = ({callback}:any) => 
 {
-    const [systems, setSystems] = useState<ISystem[]>();
+    const {universe} = useUniverse();
 
     let coordMaxValue: number = 0;
     let systemPointRadius: number = 25;
 
     let draggin: boolean = false;
 
-    const fetchSystems = async () => 
+    function SetMapBounds() 
     {
-        const response: any = await GetSystemsAsJSONAsync();
-
-        let data: ISystem[] = response;
-
-        if (data != null && data.length > 0)
+        if (universe != null && universe.length > 0)
         {
-            data?.forEach(wp => {
+            universe?.forEach(wp => {
                 coordMaxValue=Math.max(coordMaxValue, Math.abs(wp.x), Math.abs(wp.y));
             });
 
             coordMaxValue = Math.ceil(coordMaxValue * 2.2);
         }
-
-        setSystems(data);
     };
 
     useEffect(() => 
     {
-        fetchSystems();
+        SetMapBounds();
     }, []);
 
     // ------------------------------------------------------------
@@ -142,20 +135,19 @@ export const UniverseMap = ({callback}:any) =>
     //https://codepen.io/osublake/pen/oGoyYb
     const onClick = (event: any) => 
     {
-        console.log(systems);
         callback(event.target.id);
     }
 
     return (
         <div id="universeBox" className="h-full w-full">
             <svg id="universeSvg" viewBox="-500 -500 1000 1000" className="h-full w-full bg-slate-900">
-                {systems?.map((system) => (
+                {universe?.map((system) => (
                     <g key={system.symbol}>
                         <text key={system.symbol+"_"+system.x+"_"+system.y+"_name"} 
                             x={system.x-(3*system.symbol.length)} y={system.y-6-systemPointRadius} 
                             className="text-[50] fill-white select-none">{system.symbol}</text>
-                        <circle id={system.symbol} key={system.symbol+"_"+system.x+"_"+system.y} r={systemPointRadius} cx={system.x} cy={system.y} 
-                            className="fill-white hover:stroke-blue-500 hover:stroke-[10px]" 
+                        <circle id={system.symbol} key={system.symbol+"_"+system.x+"_"+system.y} r="1%" cx={system.x} cy={system.y} 
+                            className="fill-white hover:stroke-blue-500 hover:stroke-[0.5%]" 
                         onClick={onClick}/>
                     </g>
                 ))}

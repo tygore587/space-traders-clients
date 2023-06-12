@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { GetMarketAsync, GetShipyardAsync, GetWaypointsAsync } from '../pages/api/SystemService'
+import { GetJumpGateAsync, GetMarketAsync, GetShipyardAsync, GetWaypointsAsync } from '../pages/api/SystemService'
+import { ISavedMarketData, ISavedShipyardData } from '@/models/ContextModels';
 import { IWaypoint, IWaypointTrait, WaypointTraitSymbol } from "@/models/Waypoint";
 import { WaypointDetails } from "./waypointDetails";
 import { IMarket } from "@/models/Market";
 import { IShipyard } from "@/models/Shipyard";
 import { SystemShipList } from "./systemShiplist";
 import { Agent } from "@/models/Agent";
-import { useMarket, useShip, useShipyard, useToken } from "@/data/commonContext";
-import { AddHours } from "@/data/commonFunctions";
-import { shortMarketSymbol, shortShipSymbol, shortShipyardSymbol, timeThreshold } from "@/data/commonData";
+import { useContract, useFaction, useMarket, useShip, useShipyard, useToken } from "@/data/commonContext";
+import { AddHours, AddMinutes, UpdateSavedMarketData, UpdateSavedShipyardData } from "@/data/commonFunctions";
+import { savedJumpGateData, savedMarketData, savedShipyardData, shortContractSymbol, shortHomeSymbol, shortMarketSymbol, shortShipSymbol, shortShipyardSymbol, timeTreshold } from "@/data/commonData";
+import { IContract } from "@/models/Contract";
+import { ShipNavStatus } from "@/models/Ship";
+import { IJumpGate } from "@/models/JumpGate";
 
 interface IViewBox {
     x: number
@@ -26,7 +30,7 @@ interface ISystem {
 
 
 // component 
-export const SystemMap = ({agent, presetSystemSymbol, shiplist, globalDataFunction}: ISystem) => 
+export const SystemMap = ({presetSystemSymbol}: ISystem) => 
 {
     let viewbox: IViewBox = {
         x: -75,
@@ -37,13 +41,17 @@ export const SystemMap = ({agent, presetSystemSymbol, shiplist, globalDataFuncti
 
     const {token} = useToken();
     const {ships} = useShip();
-    const {marketData, marketDataDispatch} = useMarket();
-    const {shipyardData, shipyardDataDispatch} = useShipyard();
+    const {contracts} = useContract();
+    const {factions} = useFaction();
 
+    
     const [symbol, setSymbol] = useState<string>(presetSystemSymbol ?? "");
+    const [update, setUpdate] = useState<string>(symbol + new Date().toString());
     //const [shipList, setShipList] = useState<IShip[]>(shiplist);
 
     const [waypoint, setWaypoint] = useState<IWaypoint[]>();
+    const [contractData] = useState<IContract[]>(contracts);
+    const [waypointsComplete, setwaypointsComplete] = useState<IWaypoint[]>();
     const [systemSymbol, setSystemSymbol] = useState<string>();
     
     const [systemViewbox, setSystemViewbox] = useState<IViewBox>(viewbox);
@@ -51,22 +59,33 @@ export const SystemMap = ({agent, presetSystemSymbol, shiplist, globalDataFuncti
     const [selectedWaypoint, setSelectedWaypoint] = useState<IWaypoint>();
     const [market, setMarketData] = useState<IMarket>();
     const [shipyard, setShipyardData] = useState<IShipyard>();
+    const [jumpgate, setJumpGate] = useState<IJumpGate>();
 
     let orbitList: string[] = [];
     let waypointDict: Map<string, IWaypoint> = new Map<string, IWaypoint>();
 
-    const fetchWaypoints= async () => 
+    function SetSystem(s: string)
     {
-        let systemSymbol: string = symbol?.trim().toLocaleUpperCase() ?? "";
+        if (s === "") return;
 
-        systemSymbol = systemSymbol.startsWith("X1-") ? systemSymbol : "X1-" + systemSymbol;
+        setSymbol(s);
+        fetchWaypoints(s);
+    }
 
-        setSystemSymbol(systemSymbol);
-        const response: any = await GetWaypointsAsync(systemSymbol);
+    const fetchWaypoints= async (s?: string) => 
+    {
+        let system: string = symbol?.trim().toLocaleUpperCase() ?? "";
+
+        system = system.startsWith("X1-") ? system : "X1-" + system;
+
+        setSystemSymbol(s ?? system);
+        const response: any = await GetWaypointsAsync(s ?? system);
 
         if(response == null) return;
 
         let data: IWaypoint[] = response;
+
+        setwaypointsComplete(Object.assign([], data));
 
         let coords: number = 0;
 
@@ -106,6 +125,8 @@ export const SystemMap = ({agent, presetSystemSymbol, shiplist, globalDataFuncti
 
             setWaypointMap(waypointDict);
             setSelectedWaypoint(undefined);
+
+            setUpdate(symbol + new Date().toString());
         }
     };
 
@@ -130,7 +151,13 @@ export const SystemMap = ({agent, presetSystemSymbol, shiplist, globalDataFuncti
 
         const response: any = await GetMarketAsync(token, systemSymbol, symbol);
 
-        marketDataDispatch({type: "set", market: response});
+        let result: IMarket = response;
+        UpdateSavedMarketData(result);
+
+        //let newSave: ISavedMarketData = {lastUpdate: new Date(), marketData: result};
+
+        //marketDataDispatch({type: "set", market: response});
+        //savedMarketData.set(result.symbol, newSave);
         setMarketData(response);
     };
 
@@ -156,10 +183,40 @@ export const SystemMap = ({agent, presetSystemSymbol, shiplist, globalDataFuncti
         const response: any = await GetShipyardAsync(token, systemSymbol, symbol);
 
         let result: IShipyard = response;
+        UpdateSavedShipyardData(result);
 
-        shipyardDataDispatch({type: "set", shipyard: result});
+
+        /*let newSave: ISavedShipyardData = {lastUpdate: new Date(), shipyardData: result};
+
+
+        //shipyardDataDispatch({type: "set", shipyard: result});
+        savedShipyardData.set(result.symbol, newSave);*/
         setShipyardData(result);
     };
+
+    const fetchJumpGate = async (waypoint?: IWaypoint) =>
+    {
+        if (!waypoint)
+        {
+            return;
+        }
+
+        let systemSymbol: string = waypoint?.systemSymbol ?? "";
+        let symbol: string = waypoint?.symbol ?? "";
+        let isJumpGate: boolean = waypoint.type === "JUMP_GATE";
+
+        if (systemSymbol === "" || symbol === "" || !isJumpGate)
+        {
+            return;
+        } 
+
+        const response: any = await GetJumpGateAsync(token, systemSymbol, symbol);
+
+        let result: IJumpGate = response;
+
+        savedJumpGateData.set(waypoint.symbol, result);
+        setJumpGate(result);
+    }
 
     useEffect(() => 
     {
@@ -175,23 +232,42 @@ export const SystemMap = ({agent, presetSystemSymbol, shiplist, globalDataFuncti
 
         setMarketData(undefined);
         setShipyardData(undefined);
+        setJumpGate(undefined);
 
-        if (!marketData.has(symbol) || marketData.get(symbol)?.lastUpdate! > AddHours(new Date, timeThreshold) || ships?.find((s) => s.nav.waypointSymbol === symbol)) 
+        // Market
+        if (!savedMarketData.has(symbol) || 
+            savedMarketData.get(symbol)?.lastUpdate! > AddHours(new Date, timeTreshold) || 
+            (ships?.find((s) => s.nav.waypointSymbol === symbol) && savedMarketData.get(symbol)?.marketData.tradeGoods === undefined) || 
+            (ships?.find((s) => s.nav.waypointSymbol === symbol) && savedMarketData.get(symbol)?.lastUpdate! > AddMinutes(new Date, timeTreshold))) 
         {
             fetchMarket(waypointMap?.get(symbol));
         }
         else 
         {
-            setMarketData(marketData.get(symbol)?.marketData);
+            setMarketData(savedMarketData.get(symbol)?.marketData);
         }
 
-        if (!shipyardData.has(symbol) || shipyardData.get(symbol)?.lastUpdate! > AddHours(new Date, timeThreshold) || ships?.find((s) => s.nav.waypointSymbol === symbol)) 
+        // Shipyard
+        if (!savedShipyardData.has(symbol) || 
+            savedShipyardData.get(symbol)?.lastUpdate! > AddHours(new Date, timeTreshold) || 
+            (ships?.find((s) => s.nav.waypointSymbol === symbol) && savedShipyardData.get(symbol)?.shipyardData.ships === undefined) || 
+            (ships?.find((s) => s.nav.waypointSymbol === symbol) && savedShipyardData.get(symbol)?.lastUpdate! > AddMinutes(new Date, timeTreshold))) 
         {
             fetchShipyard(waypointMap?.get(symbol));
         }
         else 
         {
-            setShipyardData(shipyardData.get(symbol)?.shipyardData);
+            setShipyardData(savedShipyardData.get(symbol)?.shipyardData);
+        }
+
+        // Jumpgate
+        if (!savedJumpGateData.has(symbol)) 
+        {
+            fetchJumpGate(waypointMap?.get(symbol));
+        }
+        else 
+        {
+            setJumpGate(savedJumpGateData.get(symbol));
         }
 
         setSelectedWaypoint(waypointMap?.get(symbol));
@@ -205,11 +281,11 @@ export const SystemMap = ({agent, presetSystemSymbol, shiplist, globalDataFuncti
     }
 
     return (
-        <div id="systemBox" className="grid grid-cols-[30%_50%_20%] grid-rows-[6%_35%_59%] bg-slate-900 px-[0.5em] mb-[0.25em] gab-x-[0.5em] h-full w-full">
+        <div key={update} id="systemBox" className="grid grid-cols-[30%_50%_20%] grid-rows-[6%_35%_59%] bg-slate-900 px-[0.5em] mb-[0.25em] gab-x-[0.5em] h-full w-full">
             <div id="input" className="w-fit col-start-1 col-span-2 row-start-1">
                 <input name="symbol" id="symbol" type="text" placeholder='system Symbol' onChange={e => setSymbol(e.target.value)}></input>
                 <button className='text-zinc-800 bg-white mt-2 ml-[0.2em] px-[0.4em] py-[0.1em] border-[0.2em] border-solid rounded-lg border-sky-600 hover:border-sky-500' 
-                    type="submit" value="Go" onClick={fetchWaypoints}>go to System</button>
+                    type="submit" value="Go" onClick={() => fetchWaypoints()}>go to System</button>
             </div>
 
             <svg id="systemSvg" className="col-start-1 row-start-2 bg-slate-900 h-full w-full" viewBox={`${systemViewbox.x}, ${systemViewbox.y}, ${systemViewbox.w}, ${systemViewbox.h}`}>
@@ -228,24 +304,24 @@ export const SystemMap = ({agent, presetSystemSymbol, shiplist, globalDataFuncti
 
                 <text key={systemSymbol} x={systemViewbox.x + 3} y={systemViewbox.y + 6} className="text-[0.3em] fill-orange-500 font-bold select-none">{systemSymbol}</text>
 
-                <circle id={systemSymbol+"Sun2"} key={systemSymbol + "2"} r="2.5" cx="0" cy="0" className="fill-orange-600/25"/>
-                <circle id={systemSymbol+"Sun1"} key={systemSymbol + "1"} r="1.7" cx="0" cy="0" className="fill-orange-600/50"/>
-                <circle id={systemSymbol+"Sun0"} key={systemSymbol + "0"} r="1" cx="0" cy="0" className="fill-orange-600"/>
+                <circle id={systemSymbol+"Sun2"} key={systemSymbol + "2"} r="2.5%" cx="0" cy="0" className="fill-orange-600/25"/>
+                <circle id={systemSymbol+"Sun1"} key={systemSymbol + "1"} r="1.7%" cx="0" cy="0" className="fill-orange-600/50"/>
+                <circle id={systemSymbol+"Sun0"} key={systemSymbol + "0"} r="1%" cx="0" cy="0" className="fill-orange-600"/>
                 {waypoint?.map((wp) => 
                     
                     <g key={wp.symbol}>
                         
                         <circle id={wp.symbol + "Orbit"} key={wp.symbol+"Orbit"+"_"+wp.x+"_"+wp.y} r={Math.sqrt(wp.x*wp.x + wp.y*wp.y)} cx="0" cy="0" strokeDasharray={"1,1"}
-                        className="fill-none stroke-indigo-900/50 stroke-[0.2px]"/>
+                        className="fill-none stroke-indigo-600/50 stroke-[0.2px]"/>
 
-                        <circle id={wp.symbol} key={wp.symbol+"_"+wp.x+"_"+wp.y} r="1" cx={wp.x} cy={wp.y} 
+                        <circle id={wp.symbol} key={wp.symbol+"_"+wp.x+"_"+wp.y} r="1%" cx={wp.x} cy={wp.y} 
                             className="fill-white hover:stroke-blue-500 hover:stroke-[0.45px]" 
                             onClick={onClick}
                         />
 
                         {wp.orbitals.map((orbital) =>
                             <circle id={orbital.symbol} key={orbital.symbol+"_"+wp.x+"_"+wp.y} 
-                                r="0.7" 
+                                r="0.7%" 
                                 cx={CalculateOrbitalCoord("x", wp.x, wp.orbitals.length, wp.orbitals.indexOf(orbital), 3)} 
                                 cy={CalculateOrbitalCoord("y", wp.y, wp.orbitals.length, wp.orbitals.indexOf(orbital), 3)} 
                                 className="fill-slate-900 stroke-white stroke-[0.4px] hover:stroke-blue-500" 
@@ -277,7 +353,9 @@ export const SystemMap = ({agent, presetSystemSymbol, shiplist, globalDataFuncti
                             <div id={wp.symbol}>{wp.type}</div>
                             <div id={wp.symbol}>{wp.x}, {wp.y}</div>
                             <div id={wp.symbol}>
-                                {ships?.find((s) => s.nav.route.departure.symbol == wp.symbol) ? shortShipSymbol : ""}
+                                {factions?.find((f) => f.headquarters === wp.symbol) ? shortHomeSymbol : ""}
+                                {ships?.find((s) => s.nav.route.destination.symbol == wp.symbol && s.nav.status != ShipNavStatus.IN_TRANSIT) ? shortShipSymbol : ""}
+                                {contractData?.filter((c) => c.terms.deliver.filter((d) => d.destinationSymbol === wp.symbol).length > 0 && !c.fulfilled).length > 0 ? shortContractSymbol : ""}
                                 {wp.traits.find((trait) => trait.symbol.toString() === "MARKETPLACE") ? shortMarketSymbol : ""} 
                                 {wp.traits.find((trait) => trait.symbol.toString() === "SHIPYARD") ? shortShipyardSymbol : ""}
                             </div>
@@ -288,7 +366,8 @@ export const SystemMap = ({agent, presetSystemSymbol, shiplist, globalDataFuncti
                                 <div id={orbital.symbol} className="text-orange-500 text-xs">{orbital.symbol}</div>
                                 <div id={orbital.symbol} className="text-xs">{waypointMap?.get(orbital.symbol)?.type}</div>
                                 <div id={orbital.symbol} className="text-xs">
-                                    {ships?.find((s) => s.nav.route.departure.symbol == orbital.symbol) ? shortShipSymbol : ""}
+                                    {ships?.find((s) => s.nav.route.destination.symbol == orbital.symbol && s.nav.status != ShipNavStatus.IN_TRANSIT) ? shortShipSymbol : ""}
+                                    {contractData?.filter((c) => c.terms.deliver.filter((d) => d.destinationSymbol === orbital.symbol).length > 0 && !c.fulfilled).length > 0 ? shortContractSymbol : ""}
                                     {waypointMap?.get(orbital.symbol)?.traits.find((trait) => trait.symbol.toString() === "MARKETPLACE") ? shortMarketSymbol : ""} 
                                     {waypointMap?.get(orbital.symbol)?.traits.find((trait) => trait.symbol.toString() === "SHIPYARD") ? shortShipyardSymbol : ""}
                                 </div>
@@ -301,17 +380,16 @@ export const SystemMap = ({agent, presetSystemSymbol, shiplist, globalDataFuncti
 
             <div className="col-start-2 row-start-1 row-span-3 w-full">
                 {selectedWaypoint && <WaypointDetails 
-                    agent={agent} 
-                    shiplist={ships} 
                     waypointData={selectedWaypoint} 
                     marketData={market} 
                     shipyardData={shipyard} 
-                    globalDataFunction={globalDataFunction}
+                    jumpGateData={jumpgate}
+                    setSystem={SetSystem}
                 />}
             </div>
 
             <div className="col-start-3 row-start-1 row-span-3">
-                <SystemShipList shiplist={ships?.filter((s) => s.nav.systemSymbol === systemSymbol)}/>
+                <SystemShipList shiplist={ships?.filter((s) => s.nav.systemSymbol === systemSymbol)} currentSystemWaypoints={waypointsComplete}/>
             </div>
         </div>
     );

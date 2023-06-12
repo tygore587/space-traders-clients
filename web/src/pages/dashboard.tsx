@@ -11,13 +11,22 @@ import { IShip } from "@/models/Ship";
 import { Agent } from "@/models/Agent";
 import { GetAgentAsync } from "./api/AgentService";
 import { ContractList } from "@/components/contractList";
-import { useAgent, useShip, useToken } from "@/data/commonContext";
+import { useAgent, useContract, useFaction, useShip, useToken, useUniverse } from "@/data/commonContext";
+import { IContract } from "@/models/Contract";
+import { GetContractsAsync } from "./api/ContractService";
+import { GetSystemsAsJSONAsync } from "./api/SystemService";
+import { ISystem } from "@/models/System";
+import { GetFactionListAsync } from "./api/FactionService";
+import { IFaction } from "@/models/Faction";
 
 export default function Dashboard() 
 {
     const {token} = useToken();
     const {agent, agentDispatch} = useAgent();
+    const {universeDispatch} = useUniverse();
     const {ships, shipDispatch} = useShip();
+    const {contractDispatch} = useContract();
+    const {factions, factionDispatch} = useFaction();
 
     const [visability, setVisablity] = useState<number>(0);
     const [system, setSystem] = useState<string>(agent?.headquarters.split("-")[1] ?? "");
@@ -55,6 +64,15 @@ export default function Dashboard()
         setSystem(data.headquarters.split("-")[1]);
     };
 
+    const fetchUniverse = async () => 
+    {
+        const response: any = await GetSystemsAsJSONAsync();
+
+        let data: ISystem[] = response;
+
+        universeDispatch({type: "add", system: data});
+    };
+
     const fetchShips = async () => 
     {
         const response: any = await GetShipListAsync(token);
@@ -64,10 +82,34 @@ export default function Dashboard()
         shipDispatch({type: "add", ship: data});
     };
 
+    const fetchContracts= async () => 
+    {
+        const response: any = await GetContractsAsync(token);
+
+        let data: IContract[] = response;
+
+        contractDispatch({type: "add", contract: data});
+    };
+
+    const fetchFactions= async () => 
+    {
+        const response: any = await GetFactionListAsync();
+
+        let data: IFaction[] = response;
+
+        factionDispatch({type: "add", faction: data});
+    };
+
     useEffect(() => 
     {
-        fetchShips();
         fetchAgent();
+        fetchUniverse();
+        fetchShips();
+        fetchContracts();
+
+        if (factions.length === 0){
+            fetchFactions();
+        }
     }, []);
 
     return (
@@ -76,8 +118,8 @@ export default function Dashboard()
                 <div className="col-start-1 row-start-2"><SideNav handleCallback={SetComponentVisabilty}/></div>
                 <div className="col-start-2 row-start-2">
                     {visability === 0 && <UniverseMap callback={SetSystem}/>}
-                    {visability === 1 && <SystemMap agent={agent} shiplist={ships} presetSystemSymbol={system} globalDataFunction={SetGlobalData}/>}
-                    {visability === 2 && <ShipList/>}
+                    {visability === 1 && <SystemMap presetSystemSymbol={system}/>}
+                    {visability === 2 && <ShipList systemCallback={SetSystem}/>}
                     {visability === 3 && <ContractList globalDataFunction={SetGlobalData}/>}
                     {visability === 4 && <FactionList/>}
                 </div>

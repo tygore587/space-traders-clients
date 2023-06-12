@@ -3,7 +3,7 @@ import { IContract } from "@/models/Contract";
 import { GetContractsAsync } from "@/pages/api/ContractService";
 import { Contract } from "./contract";
 import { Agent } from "@/models/Agent";
-import { useToken } from "@/data/commonContext";
+import { useContract, useToken } from "@/data/commonContext";
 
 interface IAgent {
     globalDataFunction?: any
@@ -11,22 +11,7 @@ interface IAgent {
 
 export const ContractList = ({globalDataFunction}:IAgent) =>
 {
-    const {token} = useToken();
-    const [contracts, setContracts] = useState<IContract[]>();
-
-    const fetchFactions= async () => 
-    {
-        const response: any = await GetContractsAsync(token);
-
-        let data: IContract[] = response;
-
-        setContracts(data);
-    };
-
-    useEffect(() => 
-    {
-        fetchFactions();
-    }, []);
+    const {contracts} = useContract();
 
     return (
         <div className="flex flex-row flex-wrap overflow-y-auto gap-[1em] bg-slate-900 p-[0.5em] h-full">

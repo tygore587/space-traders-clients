@@ -1,13 +1,12 @@
 import React, { useState } from "react";
-import { IShipyardShip } from "@/models/Shipyard";
+import { IShipPurchase, IShipyardShip } from "@/models/Shipyard";
 import { ShipModuleSymbol, ShipMountSymbol } from "@/models/Ship";
 import { PurchaseShipAsync } from "@/pages/api/ShipService";
-import { useToken } from "@/data/commonContext";
+import { useAgent, useShip, useToken } from "@/data/commonContext";
 
 interface IShipData {
     shiyardWaypointSymbol: string
     shipData: any
-    globalDataFunction?: any
 }
 
 interface ISimpleModule {
@@ -22,9 +21,12 @@ interface ISimpleMount {
 
 const buttonClass: string = 'bg-slate-700 mt-[0.25em] px-[0.4em] pt-[0.1em] pb-[0.2em] border-[0.2em] border-solid rounded-lg border-sky-700 enabled:hover:bg-slate-600';
 
-export const ShipyardShipDetails = ({shiyardWaypointSymbol, shipData, globalDataFunction}:IShipData) =>
+export const ShipyardShipDetails = ({shiyardWaypointSymbol, shipData}:IShipData) =>
 {
     const {token} = useToken();
+    const {agentDispatch} = useAgent();
+    const {shipDispatch} = useShip();
+
     const [showDetails, setShowDetails] = useState<boolean>(false);
 
     let ship: IShipyardShip = shipData;
@@ -83,7 +85,10 @@ export const ShipyardShipDetails = ({shiyardWaypointSymbol, shipData, globalData
         }
         else
         {
-            globalDataFunction(response.agent, response.ship);
+            let result: IShipPurchase = response;
+
+            agentDispatch({agent: result.agent});
+            shipDispatch({type: "add", ship: result.ship});
         }
     };
 

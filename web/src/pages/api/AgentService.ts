@@ -55,6 +55,7 @@ export async function RegisterNewAgent(callname: string, faction:string, email: 
         return returnValue;
 
     } catch (error) {
+        console.log(error);
         returnValue.value = JSON.stringify(error);
         return returnValue;
     }
@@ -91,6 +92,7 @@ export async function GetAgentAsync(token: string)
         return data;
 
     } catch (error) {
+        console.log(error);
 
         let data: Agent = new Agent();
 

@@ -1,4 +1,5 @@
 import { Agent } from "./Agent"
+import { IShipCargo } from "./Ship"
 
 export interface IContract {
     id: string
@@ -45,4 +46,14 @@ export interface IContractTerm {
 export interface IContractAccepted {
     agent: Agent
     contract: IContract
+}
+
+export interface IContractDelivery {
+  contract: IContract
+  cargo: IShipCargo
+}
+
+export interface IContractFulfillment {
+  agent: Agent
+  contract: IContract
 }

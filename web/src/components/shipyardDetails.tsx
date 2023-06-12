@@ -9,14 +9,11 @@ import { useToken } from "@/data/commonContext";
 const buttonClass: string = 'bg-slate-700 mt-[0.25em] px-[0.4em] pt-[0.1em] pb-[0.2em] border-[0.2em] border-solid rounded-lg border-sky-700 enabled:hover:bg-slate-600';
 
 interface IShipyardData {
-    agent?: Agent
-    shiplist: IShip[]
     shipyardData: any
-    globalDataFunction?: any
 }
 
 
-export const ShipyardDetails = ({agent, shiplist, shipyardData, globalDataFunction}: IShipyardData) =>
+export const ShipyardDetails = ({shipyardData,}: IShipyardData) =>
 {
     const {token} = useToken();
     let shipyard: IShipyard = shipyardData;
@@ -34,7 +31,7 @@ export const ShipyardDetails = ({agent, shiplist, shipyardData, globalDataFuncti
 
             {shipyard?.ships && <div className="flex-1 flex flex-col gap-[1em] overflow-y-auto ">
                 {shipyard?.ships?.map((ship) => (
-                    <ShipyardShipDetails key={ship.name} shiyardWaypointSymbol={shipyard.symbol} shipData={ship} globalDataFunction={globalDataFunction}/>
+                    <ShipyardShipDetails key={ship.name} shiyardWaypointSymbol={shipyard.symbol} shipData={ship}/>
                 ))}
             </div>}
         </div>

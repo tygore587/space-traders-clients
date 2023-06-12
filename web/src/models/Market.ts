@@ -3,7 +3,7 @@ export interface IMarket {
     exports: ITradeGood[]
     imports: ITradeGood[]
     exchange: ITradeGood[]
-    transactions: IMarketTransaction[]
+    transactions: ITransaction[]
     tradeGoods: IMarketTradeGood[]
   }
   
@@ -126,7 +126,7 @@ export interface IMarket {
     "MOUNT_TURRET_I"
   }
   
-  export interface IMarketTransaction {
+  export interface ITransaction {
     waypointSymbol: string
     shipSymbol: string
     tradeSymbol: string

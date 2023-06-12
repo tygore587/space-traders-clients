@@ -1,3 +1,6 @@
+import { Agent } from "./Agent"
+import { ITransaction } from "./Market"
+
 export interface IShip {
     symbol: string
     registration: IShipRegistration
@@ -10,6 +13,7 @@ export interface IShip {
     mounts: IShipMount[]
     cargo: IShipCargo
     fuel: IShipFuel
+    cooldown?: ICooldown
   }
   
 export interface IShipRegistration {
@@ -44,16 +48,16 @@ export interface IShipNav {
   }
 
 export enum ShipNavStatus {
-    "IN_TRANSIT",
-    "IN_ORBIT",
-    "DOCKED"
+    "IN_TRANSIT" = "IN_TRANSIT",
+    "IN_ORBIT" = "IN_ORBIT",
+    "DOCKED" = "DOCKED"
 }
 
 export enum ShipNavFlightMode {
-    "DRIFT",
-    "STEALTH",
-    "CRUISE",
-    "BURN"
+    "DRIFT" = "DRIFT",
+    "STEALTH" = "STEALTH",
+    "CRUISE" = "CRUISE",
+    "BURN" = "BURN"
 }
   
 export interface IShipNavRoute {
@@ -206,15 +210,19 @@ export interface IShipMount {
   }
 
 export enum ShipMountSymbol {
+    "MOUNT_GAS_SIPHON",
     "MOUNT_GAS_SIPHON_I",
     "MOUNT_GAS_SIPHON_II",
     "MOUNT_GAS_SIPHON_III",
+    "MOUNT_SURVEYOR",
     "MOUNT_SURVEYOR_I",
     "MOUNT_SURVEYOR_II",
     "MOUNT_SURVEYOR_III",
+    "MOUNT_SENSOR_ARRAY",
     "MOUNT_SENSOR_ARRAY_I",
     "MOUNT_SENSOR_ARRAY_II",
     "MOUNT_SENSOR_ARRAY_III",
+    "MOUNT_MINING_LASER",
     "MOUNT_MINING_LASER_I",
     "MOUNT_MINING_LASER_II",
     "MOUNT_MINING_LASER_III",
@@ -269,5 +277,62 @@ export interface IShipRequirements {
     crew: number
     slots: number
   }
+
+export interface INavigate {
+  fuel: IShipFuel
+  nav: IShipNav
+}
   
+export interface ICooldown {
+  shipSymbol: string
+  totalSeconds: number
+  remainingSeconds: number
+  expiration: Date
+}
+
+export interface ISurvey {
+  signature: string
+  symbol: string
+  deposits: Deposits[]
+  expiration: Date
+  size: SurveySize
+}
   
+export enum SurveySize {
+  "SMALL",
+  "MODERATE",
+  "LARGE"
+}
+
+export interface IExtractionResult {
+  cooldown: ICooldown
+  extraction: IExtraction
+  cargo: IShipCargo
+}
+
+export interface IExtraction {
+  shipSymbol: string
+  yield: IYield
+}
+
+export interface IYield {
+  symbol: string
+  units: number
+}
+
+export interface IRefuel {
+  agent: Agent
+  fuel: IShipFuel
+  transaction: ITransaction
+}
+
+export interface ICargoTransaction {
+  agent: Agent
+  cargo: IShipCargo
+  transaction: ITransaction
+}
+
+export interface IJump {
+  cooldown: ICooldown
+  nav: IShipNav
+}

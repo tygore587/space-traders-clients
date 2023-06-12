@@ -22,6 +22,7 @@ export async function GetFactionListAsync(page: number = 1, limit: number = 20)
         return data;
 
     } catch (error) {
+        console.log(error);
         return null;
     }
 }

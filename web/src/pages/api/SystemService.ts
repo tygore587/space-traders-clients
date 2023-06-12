@@ -1,3 +1,4 @@
+import { IJumpGate } from "@/models/JumpGate";
 import { IMarket } from "@/models/Market";
 import { IShipyard } from "@/models/Shipyard";
 import { ISystem } from "@/models/System";
@@ -22,6 +23,7 @@ export async function GetSystemsAsJSONAsync()
         return data;
 
     } catch (error) {
+        console.log(error);
         return error;
     }    
 }
@@ -46,6 +48,7 @@ export async function GetSystemAsync(systemSymbol: string)
         return data;
 
     } catch (error) {
+        console.log(error);
         return error;
     }
 }
@@ -71,6 +74,7 @@ export async function GetWaypointsAsync(systemSymbol: string, page: number = 1, 
         return data;
 
     } catch (error) {
+        console.log(error);
         return error;
     }
 }
@@ -102,6 +106,7 @@ export async function GetMarketAsync(token: string, systemSymbol: string, waypoi
         return data;
 
     } catch (error) {
+        console.log(error);
         return error;
     }
 }
@@ -133,6 +138,39 @@ export async function GetShipyardAsync(token: string, systemSymbol: string, wayp
         return data;
 
     } catch (error) {
+        console.log(error);
+        return error;
+    }
+}
+
+export async function GetJumpGateAsync(token: string, systemSymbol: string, waypointSymbol: string) 
+{
+    if (token === "")
+    {
+        return null;
+    }
+
+    const url = 'https://api.spacetraders.io/v2/systems/'+ systemSymbol +'/waypoints/'+ waypointSymbol +'/jump-gate';
+	const options = {
+		method: 'GET',
+		headers: {
+		    Accept: 'application/json',
+            Authorization: 'Bearer ' + token
+		}
+	};
+
+    try {
+
+        let response: any = await fetch(url, options);
+
+        let result = await response.json();
+
+        let data: IJumpGate = result.data;
+
+        return data;
+
+    } catch (error) {
+        console.log(error);
         return error;
     }
 }

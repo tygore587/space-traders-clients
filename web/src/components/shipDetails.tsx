@@ -3,7 +3,7 @@ import { IShip, IShipNav, ShipModuleSymbol, ShipMountSymbol } from "@/models/Shi
 import { ShipActionPanel } from "./shipActionPanel";
 import { shortCargoSymbol, shortEnergySymbol, shortFuelSymbol } from "@/data/commonData";
 import { ShipNavFlightMode } from "@/models/Ship";
-import { PatchFlightMode } from "@/pages/api/ShipService";
+import { PatchFlightModeAsync } from "@/pages/api/ShipService";
 import { useShip, useToken } from "@/data/commonContext";
 
 interface ISimpleModule {
@@ -21,6 +21,9 @@ export const ShipDetails = ({shipData}:any) =>
     const {token} = useToken();
 
     let ship: IShip = shipData;
+
+    let fms: string = ship.nav.flightMode.toString();
+    const [flightModeState, setFlightModeState] = useState<string>(fms);
 
     let moduleMap: Map<ShipModuleSymbol, number> = new Map<ShipModuleSymbol, number>();
     let mountMap: Map<ShipMountSymbol, number> = new Map<ShipMountSymbol, number>();
@@ -69,7 +72,7 @@ export const ShipDetails = ({shipData}:any) =>
 
     const patchShipNav = async (shipSymbol: string, flightMode: string) => 
     {
-        const response: any = await PatchFlightMode(token, shipSymbol, flightMode);
+        const response: any = await PatchFlightModeAsync(token, shipSymbol, flightMode);
 
         if (response === null){
             return;
@@ -78,19 +81,21 @@ export const ShipDetails = ({shipData}:any) =>
         let shipNav: IShipNav = response;
 
         ship.nav = shipNav;
+
+        fms = ship.nav.flightMode.toString();
+        setFlightModeState(ship.nav.flightMode.toString());
     };
 
     function SetFlightMode(event: any)
     {
         let flightMode: string = event.target.value;
-
+        fms = flightMode;
+        setFlightModeState(flightMode);
         patchShipNav(ship.symbol, flightMode);
     }
 
     return (
         <div className="flex flex-col justify-start gap-[1em] w-[35em]">
-            <ShipActionPanel shipData={ship} callback={null}/>
-
             <div className="
                 flex flex-col justify-start 
                 bg-slate-800 
@@ -101,8 +106,8 @@ export const ShipDetails = ({shipData}:any) =>
                 <p className="text-orange-500 font-bold">{ship?.symbol} ({ship?.registration.role} {ship?.frame.name.replace("Frame ", "")})</p>
                 <p className="text-orange-500 font-bold text-xs">{ship?.frame.description}</p>
                 <hr className="border-orange-500 mx-[0.1em] my-[0.3em]"/>
-                <p><i className="font-bold">-{ship?.nav.status}-</i> {ship?.nav.route.destination.symbol}</p>
-                <select className="bg-slate-800 w-fit" value={ship.nav.flightMode} onChange={SetFlightMode}>
+                <p><i className="font-bold">-{ship?.nav?.status}-</i> {ship?.nav.route.destination.symbol}</p>
+                <select className="bg-slate-800 w-fit" defaultValue={flightModeState} /*value={fms}*/ onChange={SetFlightMode}>
                     <option value={ShipNavFlightMode[ShipNavFlightMode.BURN]}>{ShipNavFlightMode[ShipNavFlightMode.BURN]}</option>
                     <option value={ShipNavFlightMode[ShipNavFlightMode.CRUISE]}>{ShipNavFlightMode[ShipNavFlightMode.CRUISE]}</option>
                     <option value={ShipNavFlightMode[ShipNavFlightMode.DRIFT]}>{ShipNavFlightMode[ShipNavFlightMode.DRIFT]}</option>
